@@ -1,247 +1,143 @@
-# HACCP-Builder
+# HACCP 计划生成器（HACCP-Builder）
 
-A guided web app that walks any food facility operator — in the US or
-Canada — through building a formal **HACCP plan**: the Codex Alimentarius /
-NACMCF structure of **5 Preliminary Steps** and **7 Principles**. Facility
-profile, HACCP team, GMPs/prerequisite programs, an approved-supplier list,
-per-product process flow with on-site confirmation, per-product
-**formulations** with US/Canada allergen flagging, hazard analysis, CCP
-determination (Codex four-question decision tree), preventive control
-detail, recall planning (team + annual mock recall log), a full set of
-food-safety SOPs (including per-product allergen declarations and HACCP
-plan validation/reassessment), and export to a formatted Word document.
+一款面向**中国中小食品企业**的引导式 Web 应用，帮助食品企业运营者一步一步构建正式的
+**HACCP 计划**，遵循《国际食品法典委员会》(Codex Alimentarius) / NACMCF 的 HACCP 结构——
+**5 个预备步骤 + 7 项原则**。
 
-This is a working scaffold, not a finished product — see "What's stubbed
-out" below before treating this as production-ready.
+从企业概况、HACCP 团队、GMP 与前提方案、合格供应商、产品与配方、危害分析、CCP 判定、
+预防控制措施、召回计划，到整套食品安全 SOP，最后一键导出为格式化的 **Word 文档**。
+全程按中文操作习惯设计，法规依据指向《食品卫生通则》（CAC/RCP 1-1969）与
+《食品安全国家标准 食品生产通用卫生规范》（GB 14881）。
 
-## Regulatory framing
+> 本工具用于协助起草 HACCP 计划，不能替代企业食品安全负责人、食品安全顾问或相关机构的审核与签署。
 
-The classic 12-part Codex/NACMCF HACCP system (5 Preliminary Steps + 7
-Principles) is the common backbone that satisfies food safety regulation on
-both sides of the border:
+## 功能一览
 
-- This exact structure is **mandatory verbatim** for FDA seafood HACCP
-  (21 CFR 123), FDA juice HACCP (21 CFR 120), and USDA FSIS meat/poultry
-  HACCP (9 CFR 417).
-- For general US manufactured-food facilities not in those three regulated
-  categories, this same structure functionally satisfies (and exceeds)
-  FDA's FSMA Hazard Analysis and Risk-Based Preventive Controls requirement
-  (21 CFR Part 117 Subpart C, "HARPC"). US GMPs are cited from 21 CFR Part
-  117 Subpart B.
-- For Canada, CFIA's Safe Food for Canadians Regulations (SFCR) require a
-  preventive control plan built on these same HACCP principles; CFIA
-  prerequisite-program content (GMPs, sanitation, pest control, recall) is
-  cited directly.
+- **企业概况** — 企业名称、地址、食品类别、负责人与联系方式，计划下所有产品共用。
+- **HACCP 团队（预备步骤 1）** — 组建负责本计划的多学科团队。
+- **GMP 与前提方案** — 人员卫生、卫生操作（SSOP）、虫害防治、培训、班前检查等起始文档模板。
+- **供应商** — 建立并维护合格供应商清单、保证书与认证。
+- **产品（预备步骤 2 和 3）** — 描述每个产品的组成、分销、预期用途与预期消费者。
+- **工艺流程（预备步骤 4 和 5）** — 绘制流程图并在现场确认。
+- **配方** — 原料级详细信息：占配方比例、功能作用、关联供应商、原产国、是否过敏原等。
+- **危害分析（原则 1）** — 每个工艺步骤的生物、化学、物理危害，提供预填建议与过敏原驱动建议。
+- **CCP 判定（原则 2）** — Codex 四问判定树，每次作答后服务端重新评估。
+- **预防控制措施（原则 3-7）** — 关键限值、监控、纠正措施、验证、记录保存、责任人。
+- **召回计划** — 指定召回团队角色与联系人，并记录年度模拟召回。
+- **SOP** — 按产品过敏原声明、供应商验证、HACCP 计划验证与年度再评估、纠正措施与验证记录等。
+- **审核与导出** — 摘要统计与解锁/导出流程，下载格式化、可审计的 Word 文档。
+- **控制台** — 计划列表，支持**新建、重命名、删除**计划，一键进入向导。
 
-This build is intentionally **general/multi-sector** — it doesn't branch
-app logic per sector. Instead, the Facility Profile step lets you select
-every regulatory scope that applies to you, and surfaces an informational
-note: if you process seafood, juice, or meat/poultry, your plan must
-additionally satisfy that sector's specific regulation on top of the
-general structure this wizard builds.
+## 法规框架
 
-## Wizard steps
+本应用遵循 **Codex/NACMCF 的 HACCP 结构**（5 个预备步骤 + 7 项原则），这是国际上普遍
+认可并采用的 HACCP 实施框架。各 SOP 模板的法规依据标注为：
 
-1. **Facility Profile** — facility name/address, every applicable US/CA
-   regulatory scope, CFIA licence / FDA registration numbers, responsible
-   individual.
-2. **HACCP Team** *(Preliminary Step 1)* — the multidisciplinary team
-   responsible for the plan. Distinct from the Recall Team (step 11).
-3. **GMPs & Prerequisite Programs** — starter documents citing 21 CFR Part
-   117 Subpart B and CFIA prerequisite-program guidance.
-4. **Vendors / Suppliers** — the facility-wide approved supplier list.
-5. **Products** *(Preliminary Steps 2 & 3)* — description/distribution,
-   intended use, and intended consumers for each product.
-6. **Process Flow** *(Preliminary Steps 4 & 5, per product)* — the flow
-   diagram, plus on-site confirmation (confirmed-by/at/notes).
-7. **Formulations** *(per product)* — ingredient-level detail: %
-   of formulation, functional role, supplier (linked to the Vendor list),
-   country of origin, and US/Canada allergen flagging.
-8. **Hazard Analysis** *(Principle 1, per product)* — biological/chemical/
-   physical/radiological hazards at each step, seeded from a static library
-   and from flagged allergen ingredients.
-9. **CCP Determination** *(Principle 2, per product)* — the Codex
-   four-question decision tree, re-evaluated server-side on every answer.
-10. **Preventive Controls** *(Principles 3-7, per product)* — critical
-    limits, monitoring, corrective action, verification, recordkeeping,
-    responsible party for each CCP.
-11. **Recall Plan** — recall team roles/contacts, mock recall log, and the
-    generated Recall Plan document.
-12. **SOPs** — per-product allergen declarations (built from Formulations
-    data), supplier verification, HACCP plan validation & annual
-    reassessment, corrective-action & verification records, and more.
-13. **Review & Export** — summary stats and the unlock/export flow.
+- **CAC**：《食品卫生通则》（CAC/RCP 1-1969）
+- **中国**：《食品安全国家标准 食品生产通用卫生规范》（GB 14881）
+- **过敏原**：按《国际食品法典委员会》过敏原清单与 GB 7718 食品标签标准整理
 
-## Stack
+本构建是**通用/跨行业**的，不针对特定食品行业分支应用逻辑。您可以在「企业概况」步骤
+记录食品类别，并在模板文档中按需补充所在行业的具体要求。
 
-- **Next.js 14** (App Router) + TypeScript + Tailwind
-- **Prisma** ORM, targeting Postgres (see DEPLOYMENT.md for provisioning
-  one — locally you can point `DATABASE_URL` at any Postgres instance,
-  including a free Neon/Supabase database or Docker)
-- **NextAuth** (credentials provider, JWT sessions — no third-party
-  identity provider ever sees user data)
-- **Stripe** for billing (one-time plan unlock + optional recurring storage
-  subscription), with a dev-mode bypass so the whole flow is testable
-  without live keys
-- **docx** for generating the exported Word document
+## 技术栈
 
-## Running locally
+- **Next.js 14**（App Router）+ TypeScript + Tailwind CSS
+- **Prisma** ORM，目标数据库 **Postgres**（本机可用 Docker 运行，或使用 Neon/Supabase 等免费实例）
+- **NextAuth**（邮箱 + 密码凭据登录，bcrypt 加密，JWT 会话）
+- **Stripe** 计费（一次性解锁计划 + 可选存储订阅），并提供开发模式旁路便于无密钥测试
+- **docx** 生成导出的 Word 文档
+
+## 本地运行
 
 ```bash
 cd haccp-builder
 npm install
-cp .env.example .env        # fill in DATABASE_URL (Postgres) and NEXTAUTH_SECRET at minimum
+cp .env.example .env        # 至少填写 DATABASE_URL（Postgres）和 NEXTAUTH_SECRET
 npx prisma generate
 npx prisma migrate dev --name init
 npm run dev
 ```
 
-The schema targets Postgres — `DATABASE_URL` needs to point at a real
-Postgres instance even for local dev. A free [Neon](https://neon.tech) or
-[Supabase](https://supabase.com) database works well, or run one locally
-with `docker run -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres`.
+`schema` 面向 Postgres——即使本地开发 `DATABASE_URL` 也须指向真实的 Postgres 实例。
+可使用免费的 [Neon](https://neon.tech) 或 [Supabase](https://supabase.com)，或在本地运行：
 
-**Verification note:** this scaffold was built and checked in a sandboxed
-environment whose network allowlist blocks Prisma's engine-binary CDN
-(`binaries.prisma.sh`), so `prisma generate` couldn't be run to completion
-there (same limitation the reference PCP Planner app documented). What
-*was* verified in that environment: `npm install` completes cleanly, and
-`next build`'s webpack compilation stage passes with zero syntax/import
-errors across every route and component (78 source files). The only
-`next build` failures observed there are TypeScript type errors that trace
-directly back to the un-generated Prisma Client (e.g. `Module
-"@prisma/client" has no exported member 'Plan'`, plus the implicit-`any`
-cascades that follow from it) — nothing else. Run `npx prisma generate`
-followed by `npm run build` on a machine with normal network access (any
-laptop, CI runner, or standard host) — that step is required once and will
-resolve every remaining type error.
+```bash
+docker run -d --name haccp-postgres -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=haccp_builder -p 5432:5432 postgres
+```
 
-Visit `http://localhost:3000`. Register an account, create a plan, and walk
-through the wizard. Since `STRIPE_SECRET_KEY` is blank by default, the
-Review & Export step will offer a "(Dev mode) Simulate unlock" button
-instead of a real Stripe checkout, so you can test the full flow including
-docx export without billing credentials.
+启动后访问 `http://localhost:3000`：注册账号、创建计划、按 13 步向导逐项填写。
+`STRIPE_SECRET_KEY` 为空时，审核与导出步骤会显示「（开发模式）模拟解锁」按钮，
+可无支付密钥走通全部流程（含 docx 导出）。
 
-## Data model
+## 数据模型
 
-See `prisma/schema.prisma`. Key entities:
+详见 `prisma/schema.prisma`。核心实体：
 
-- `User` — account + membership/billing state
-- `Plan` — one HACCP plan for a facility, owns a serialized JSON
-  `facilityProfile` string plus relational `products`, `vendors`, `sops`,
-  `recallContacts`, `mockRecallRecords`, `haccpTeamMembers`, and export
-  records
-- `HaccpTeamMember` — Preliminary Step 1: the HACCP team, distinct from
-  `RecallContact` (the recall team) — a person can be on both
-- `Vendor` — the facility-wide approved supplier list; can be linked from
-  an `Ingredient`'s formulation record
-- `Product` — one product made at the facility. Holds product-specific
-  fields (Preliminary Steps 2 & 3) plus the Preliminary Step 5 on-site flow
-  confirmation fields (`flowConfirmedBy`, `flowConfirmedAt`,
-  `flowConfirmationNotes`), and owns its own `processSteps` and
-  `ingredients`
-- `Ingredient` — **new in HACCP-Builder**, scoped to `Product`: name, %
-  of formulation, functional role, optional linked `Vendor`, country of
-  origin, allergen flag + type (UI-suggested from the combined US/Canada
-  priority-allergen checklist, `src/lib/allergenLibrary.ts`). Feeds
-  suggested hazards (`src/lib/hazardLibrary.ts`) and the per-product
-  allergen declaration in the allergen-control SOP
-- `ProcessStep` — one step in a product's process flow (Preliminary Step 4)
-- `Hazard` — one hazard at a process step, including the four CCP
-  decision-tree answers, the resulting `ccpStatus`, and preventive-control
-  fields (Principles 3-7)
-- `Sop` — a generated/edited GMP or food-safety document
-- `RecallContact` / `MockRecallRecord` — the recall team and mock-recall
-  log
+- `User` — 账号与计费/保留状态
+- `Plan` — 一个 HACCP 计划，持有序列化的 JSON `facilityProfile`，并关联 `products`、
+  `vendors`、`sops`、`recallContacts`、`mockRecallRecords`、`haccpTeamMembers`、`exports`
+- `HaccpTeamMember` — 预备步骤 1：HACCP 团队（区别于 `RecallContact` 召回团队）
+- `Vendor` — 全厂合格供应商清单，可由配方的 `Ingredient` 关联
+- `Product` — 厂内一个产品：预备步骤 2、3 的产品字段 + 预备步骤 5 的现场确认字段，
+  并拥有自己的 `processSteps` 与 `ingredients`
+- `Ingredient` — 产品级原料：名称、占配方比例、功能作用、可选关联 `Vendor`、
+  原产国、过敏原标记与类型（由 Codex/GB 7718 过敏原清单提示）。驱动建议危害
+  与按产品的过敏原声明
+- `ProcessStep` — 产品工艺流程中的一个步骤（预备步骤 4）
+- `Hazard` — 某步骤的一个危害，含 CCP 四问判定树的作答、`ccpStatus` 及预防控制字段（原则 3-7）
+- `Sop` — 生成/编辑后的 GMP 或食品安全文档
+- `RecallContact` / `MockRecallRecord` — 召回团队与模拟召回日志
+- `PlanExport` — 导出文件记录（审计/再下载用）
 
-Note: several fields that would naturally be Prisma `enum`s (membership
-tier, plan status, hazard type/severity/likelihood, CCP status) are typed
-as `String` instead, following the same convention as the reference app.
-Allowed values are documented in comments in the schema and enforced in
-application code.
+> 多个字段（会员等级、计划状态、危害类型/严重度/可能性、CCP 状态）遵循既有约定
+> 以 `String` 存储，允许值在 schema 注释与应用代码中说明。
 
-## Core logic
+## 核心逻辑
 
-- `src/lib/ccpDecisionTree.ts` — pure-function implementation of the Codex
-  four-question CCP decision tree, ported as-is from the reference app with
-  HACCP-appropriate copy. The hazard API route re-runs this server-side on
-  every answer update, so `ccpStatus` is never trusted from the client.
-- `src/lib/hazardLibrary.ts` — seed hazard suggestions keyed by process-step
-  name, plus `suggestAllergenHazardsForStep`, which suggests an allergen
-  cross-contact hazard at receiving/mixing/packaging/changeover steps for
-  any ingredient flagged as an allergen on the Formulations step.
-- `src/lib/allergenLibrary.ts` — the combined US/Canada priority-allergen
-  checklist, tagged by jurisdiction.
-- `src/lib/sopTemplates.ts` — starter templates for GMPs/prerequisite
-  programs, the recall plan, and remaining food-safety SOPs, each citing
-  the specific US and/or Canadian regulation it maps to. The
-  `allergen_control` template is **per-product**, generated directly from
-  each product's `Ingredient` records — a genuine improvement over the
-  reference app's facility-wide-only version.
-- `src/lib/exportDocx.ts` — assembles the whole plan into a single `.docx`
-  via the `docx` package.
-- `src/lib/entitlements.ts` — single source of truth for what a user/plan
-  is entitled to (export gating, retention window, active subscription
-  check).
+- `src/lib/ccpDecisionTree.ts` — Codex 四问 CCP 判定树的纯函数实现；危害 API 路由在每次
+  作答更新后于服务端重跑，`ccpStatus` 绝不信任客户端传入
+- `src/lib/hazardLibrary.ts` — 按工艺步骤名称的预填危害建议，以及按过敏原原料
+  在接收/混合/包装/换产等步骤生成交叉接触危害建议
+- `src/lib/allergenLibrary.ts` — 对齐 Codex 过敏原清单与 GB 7718 的主要过敏原清单
+- `src/lib/sopTemplates.ts` — GMP/前提方案、召回计划及剩余食品安全 SOP 的起始模板，
+  法规依据标注为 CAC/RCP 1-1969 与 GB 14881；`allergen_control` 模板为**按产品**生成，
+  直接取自每个产品的 `Ingredient` 记录
+- `src/lib/exportDocx.ts` — 通过 `docx` 包将整个计划组装为单个 Word 文档
+- `src/lib/entitlements.ts` — 用户/计划权限的统一来源（导出门控、保留窗口、订阅状态）
 
-## Privacy & data handling
+## 隐私与数据安全
 
-- **Isolation by construction.** Every API route resolves the current user
-  from the signed session (`src/lib/session.ts`) and scopes every Prisma
-  query by `userId` (directly, or transitively through the owning `Plan` /
-  `Product` / `ProcessStep`). There is no endpoint that accepts a bare
-  plan/product/step/hazard/ingredient id without also checking ownership.
-- **Credentials, not OAuth.** Sign-in is email + password (bcrypt-hashed,
-  12 rounds); sessions are signed JWTs (`NEXTAUTH_SECRET`).
-- **Retention model.** Plans on the standard tier get a
-  `retentionExpiresAt` timestamp (`DEFAULT_RETENTION_DAYS`, default 90) set
-  on creation and refreshed on unlock/subscription events. An active
-  storage subscription removes that expiry. **Note:** the actual purge job
-  is not implemented yet — see "What's stubbed out."
-- **User-initiated deletion.** `DELETE /api/plans/[id]` deletes a plan and
-  everything under it via cascading deletes. `User.dataDeletionRequestedAt`
-  is reserved on the schema for a full-account deletion flow (not yet wired
-  up).
-- **Download anytime.** Once a plan is unlocked, export isn't gated by
-  storage-subscription status, only by the one-time unlock.
+- **按构建隔离**。每个 API 路由从已签名会话解析当前用户（`src/lib/session.ts`），
+  并以 `userId`（直接或通过所属 `Plan`/`Product`/`ProcessStep` 传递）限定每个 Prisma 查询。
+  不存在接受裸 plan/product/step/hazard/ingredient id 而不校验所有权的接口。
+- **凭据登录而非 OAuth**。邮箱 + 密码（bcrypt 12 轮哈希），会话为签名的 JWT（`NEXTAUTH_SECRET`）。
+- **保留模型**。标准套餐的计划在创建时设置 `retentionExpiresAt`
+  （`DEFAULT_RETENTION_DAYS`，默认 90 天），解锁/订阅事件时刷新；有效的存储订阅会移除该期限。
+  > 注意：实际的清理任务尚未实现，见下方「待办事项」。
+- **用户主动删除**。`DELETE /api/plans/[id]` 通过级联删除删除计划及其全部关联数据。
+  控制台提供「删除」按钮并带二次确认。
 
-## Billing model
+## 计费模型
 
-Identical to the reference app: one-time fee per plan (`Plan.isPaid`)
-unlocks `.docx` export; optional recurring storage subscription
-(`User.storageSubscriptionEnd`) removes the default retention window.
-Stripe Checkout (`/api/billing/checkout`), fulfilled via webhook
-(`/api/billing/webhook`). Until `STRIPE_SECRET_KEY` is set, both routes
-no-op safely and the UI falls back to a dev-mode unlock button
-(`/api/billing/checkout-dev-unlock`, gated by `ALLOW_FREE_UNLOCK` once
-deployed).
+一次性费用解锁单个计划（`Plan.isPaid`）以启用 Word 导出；可选的周期存储订阅
+（`User.storageSubscriptionEnd`）可移除默认保留期限。使用 Stripe Checkout
+（`/api/billing/checkout`），由 webhook（`/api/billing/webhook`）完成履约。
+未设置 `STRIPE_SECRET_KEY` 时，两个路由安全地空操作，UI 回退到开发模式解锁按钮
+（`/api/billing/checkout-dev-unlock`，部署后由 `ALLOW_FREE_UNLOCK` 控制）。
 
-To go live: create the two Stripe Prices, set `STRIPE_SECRET_KEY`,
-`STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID_ONE_TIME`, and
-`STRIPE_PRICE_ID_STORAGE_SUBSCRIPTION`, and register the webhook endpoint
-in the Stripe dashboard.
+正式启用：创建两个 Stripe 价格，设置 `STRIPE_SECRET_KEY`、`STRIPE_WEBHOOK_SECRET`、
+`STRIPE_PRICE_ID_ONE_TIME`、`STRIPE_PRICE_ID_STORAGE_SUBSCRIPTION`，并在 Stripe
+后台注册 webhook 端点。
 
-## What's stubbed out / next steps
+## 待办事项 / 后续计划
 
-1. **Retention purge job.** No scheduled job yet purges plans past
-   `retentionExpiresAt`.
-2. **Account deletion flow.** No user-facing "delete my account and all
-   data" action yet (cascading relations are already set up for it).
-3. **Email verification / password reset.** Registration is immediate with
-   no email step.
-4. **PDF export**, in addition to docx, if desired.
-5. **A real review/sign-off step** — e.g. an e-signature or "reviewed by
-   [name] on [date]" attestation before export.
-6. **Legal/regulatory review of the templates and CCP tree language.** The
-   language here follows the standard Codex/NACMCF structure and the cited
-   FDA/USDA FSIS/CFIA terminology as understood at the time of writing, but
-   has not been reviewed by a food-safety consultant, lawyer, FDA, USDA
-   FSIS, or CFIA; treat it as a strong starting draft, not a compliance
-   guarantee.
-7. **Sector-specific HACCP requirements** (21 CFR 123 seafood, 21 CFR 120
-   juice, 9 CFR 417 meat/poultry) are cited but not separately enforced in
-   app logic — this build is intentionally general/multi-sector.
-8. **Production database.** Postgres is already the configured provider
-   (see DEPLOYMENT.md); the string-typed enum fields and the JSON-string
-   `facilityProfile` field could be converted to native Prisma `enum`/`Json`
-   types if desired.
+1. **保留期清理任务** — 尚无定时任务清除超过 `retentionExpiresAt` 的计划。
+2. **账户删除流程** — 尚无用户可见的「删除账号及全部数据」动作（级联关系已就绪）。
+3. **邮箱验证 / 密码重置** — 注册即刻完成，无邮箱验证环节。
+4. **PDF 导出** — 在 docx 之外按需增加。
+5. **正式审核/签署步骤** — 例如导出前的电子签名或「[姓名] 于 [日期] 审核」确认。
+6. **模板与判定树语言的法规复核** — 模板语言遵循标准 Codex/NACMCF 结构，未经食品安全
+   顾问、律师或监管机构审查，请作为起草起点而非合规保证。
+7. **生产数据库** — Postgres 已是配置的 provider（见 DEPLOYMENT.md）；字符串类型的枚举字段
+   与 JSON 字符串 `facilityProfile` 可按需转换为原生 Prisma `enum`/`Json` 类型。
