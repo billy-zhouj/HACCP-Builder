@@ -44,20 +44,17 @@ export default function SopsPage({ params }: { params: { id: string } }) {
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">SOPs</h1>
+      <h1 className="text-2xl font-bold text-slate-900">SOP（标准操作规程）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Remaining hazard-specific documents, including a per-product allergen declaration built
-        from your Formulations data, and the HACCP-specific validation/reassessment and
-        corrective-action/verification records.
+        其余与危害相关的文档，包括基于配方数据构建的按产品过敏原声明，以及 HACCP
+        专属的验证/再评估和纠正措施/验证记录。
       </p>
       <RegulatoryNote>
-        The Allergen Control Plan below auto-generates a per-product declaration from each
-        product&apos;s ingredient list (Formulations step) — a genuine improvement over a single
-        facility-wide list, since it stays accurate as formulations change.
+        下方的过敏原控制计划会根据每个产品的原料清单（配方步骤）自动生成按产品的过敏原声明——这比单一的企业级清单是真正的改进，因为配方变化时声明仍能保持准确。
       </RegulatoryNote>
       <TemplateDocsEditor available={AVAILABLE} generated={generated} onGenerate={generate} onSave={save} onDelete={remove} />
     </div>

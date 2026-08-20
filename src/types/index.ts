@@ -1,43 +1,37 @@
-// Facility-wide profile — shared across every product on the plan.
-// Per-product details (description, intended use/consumer, packaging,
-// shelf life) live on the Product model instead, since a plan can cover
-// multiple products.
+// 企业级概况——同一 HACCP 计划下的所有产品共用。
+// 产品级细节（产品描述、预期用途/消费者、包装、保质期）位于 Product 模型，
+// 因为一个计划可能覆盖多个产品。
 export interface FacilityProfile {
   facilityName: string;
   address: string;
-  // General summary of what's produced at this facility (e.g. "ready-to-eat
-  // baked goods, shelf-stable sauces"). Product-specific detail lives per product.
+  // 本企业生产内容的概述（例如「即食烘焙食品、常温货架期酱料」）。产品级细节按产品记录。
   foodCategories: string;
-  // Which US/Canadian regulatory regime(s) this facility operates under.
-  // Multiple can apply (e.g. a facility selling into both countries).
-  // "FDA_HARPC": general US manufactured food facility under FSMA's Hazard
-  //   Analysis & Risk-Based Preventive Controls rule (21 CFR Part 117
-  //   Subpart C).
-  // "FDA_SEAFOOD": subject to FDA seafood HACCP (21 CFR 123).
-  // "FDA_JUICE": subject to FDA juice HACCP (21 CFR 120).
-  // "USDA_FSIS": subject to USDA FSIS meat/poultry HACCP (9 CFR 417).
-  // "CFIA_SFCR": federally licensed under Canada's Safe Food for Canadians
-  //   Regulations (SFCR).
-  // "CA_PROVINCIAL": intra-provincial only, regulated by a Canadian
-  //   provincial/municipal authority instead of CFIA.
-  // "OTHER": any other jurisdiction.
+  // 本企业适用的美国/加拿大法规范围（可多选，例如同时销往两国的企业）。
+  // "FDA_HARPC": 一般美国食品生产设施——FSMA 危害分析与基于风险的预防性控制规则
+  //   （21 CFR Part 117 Subpart C）。
+  // "FDA_SEAFOOD": 美国海产品 HACCP（21 CFR 123）。
+  // "FDA_JUICE": 美国果汁 HACCP（21 CFR 120）。
+  // "USDA_FSIS": 美国 USDA FSIS 肉类/禽类 HACCP（9 CFR 417）。
+  // "CFIA_SFCR": 加拿大《安全食品法条例》(SFCR) 联邦许可。
+  // "CA_PROVINCIAL": 仅省内销售，由加拿大省/市监管机构而非 CFIA 监管。
+  // "OTHER": 其他司法辖区。
   regulatoryScopes: string[];
-  // CFIA licence number, if federally licensed under the SFCR (blank otherwise).
+  // CFIA 许可证号（若适用 SFCR 联邦许可，否则留空）。
   cfiaLicenseNumber: string;
-  // FDA facility registration number, if applicable (blank otherwise).
+  // FDA 企业注册号（若适用，否则留空）。
   fdaRegistrationNumber: string;
   responsibleIndividual: string;
   responsibleIndividualContact: string;
 }
 
 export const REGULATORY_SCOPE_OPTIONS: { value: string; label: string }[] = [
-  { value: "FDA_HARPC", label: "US — general manufactured food facility (FSMA HARPC, 21 CFR Part 117 Subpart C)" },
-  { value: "FDA_SEAFOOD", label: "US — seafood HACCP (21 CFR 123)" },
-  { value: "FDA_JUICE", label: "US — juice HACCP (21 CFR 120)" },
-  { value: "USDA_FSIS", label: "US — meat/poultry HACCP (USDA FSIS, 9 CFR 417)" },
-  { value: "CFIA_SFCR", label: "Canada — federally licensed under the Safe Food for Canadians Regulations (SFCR)" },
-  { value: "CA_PROVINCIAL", label: "Canada — provincial/municipal only (intra-provincial sales)" },
-  { value: "OTHER", label: "Other / not sure yet" },
+  { value: "FDA_HARPC", label: "美国——一般食品生产设施（FSMA HARPC，21 CFR Part 117 Subpart C）" },
+  { value: "FDA_SEAFOOD", label: "美国——海产品 HACCP（21 CFR 123）" },
+  { value: "FDA_JUICE", label: "美国——果汁 HACCP（21 CFR 120）" },
+  { value: "USDA_FSIS", label: "美国——肉类/禽类 HACCP（USDA FSIS，9 CFR 417）" },
+  { value: "CFIA_SFCR", label: "加拿大——《安全食品法条例》(SFCR) 联邦许可" },
+  { value: "CA_PROVINCIAL", label: "加拿大——仅省/市监管（省内销售）" },
+  { value: "OTHER", label: "其他 / 暂不确定" },
 ];
 
 export const EMPTY_FACILITY_PROFILE: FacilityProfile = {
@@ -92,24 +86,24 @@ export interface VendorData {
 export const VENDOR_STATUSES = ["APPROVED", "PENDING", "SUSPENDED"] as const;
 
 export const SUGGESTED_RECALL_ROLES = [
-  "Recall Coordinator",
-  "Alternate Recall Coordinator",
-  "Quality / Food Safety Lead",
-  "Operations Lead",
-  "Communications Lead",
-  "Logistics / Distribution Lead",
-  "Legal Counsel",
+  "召回协调员",
+  "副召回协调员",
+  "质量 / 食品安全负责人",
+  "运营负责人",
+  "沟通负责人",
+  "物流 / 分销负责人",
+  "法律顾问",
 ];
 
 export const SUGGESTED_HACCP_TEAM_ROLES = [
-  "HACCP Team Leader",
-  "Quality Assurance / Food Safety",
-  "Production / Operations",
-  "Engineering / Maintenance",
-  "Microbiology / Technical",
-  "Sanitation",
-  "Purchasing / Supply Chain",
-  "External HACCP Consultant",
+  "HACCP 团队组长",
+  "质量保证 / 食品安全",
+  "生产 / 运营",
+  "工程 / 维护",
+  "微生物 / 技术",
+  "卫生（清洁消毒）",
+  "采购 / 供应链",
+  "外部 HACCP 顾问",
 ];
 
 export interface HaccpTeamMemberData {

@@ -100,20 +100,19 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Hazard Analysis (Principle 1)</h1>
+      <h1 className="text-2xl font-bold text-slate-900">危害分析（原则 1）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Identify biological, chemical, physical, and radiological hazards at each process step.
+        识别每个工艺步骤上的生物性、化学性、物理性和放射性危害。
       </p>
 
-      <GuidancePanel title="Seeded suggestions">
-        Click &quot;Suggest hazards&quot; on any step for a starting list based on the step name
-        and, where an ingredient on the Formulations step is flagged as an allergen, an allergen
-        cross-contact hazard at receiving, mixing, packaging, and changeover steps. Always a
-        starting point — edit or remove freely.
+      <GuidancePanel title="预填建议">
+        点击任意步骤上的「建议危害」，即可基于步骤名称获得一个起始清单；若「配方」步骤中
+        有原料被标记为过敏原，还会在收货、混合、包装和转产步骤建议过敏原交叉接触危害。
+        这始终只是一个起点——可自由编辑或删除。
       </GuidancePanel>
 
       <ProductSelector products={products} activeProductId={activeId} onSelect={setActiveId} />
@@ -123,13 +122,13 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
           <div key={step.id} className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-slate-800">
-                Step {step.order}: {step.name}
+                步骤 {step.order}：{step.name}
               </h2>
               <button
                 onClick={() => suggestForStep(step)}
                 className="text-xs font-medium text-brand-700 hover:underline"
               >
-                Suggest hazards
+                建议危害
               </button>
             </div>
 
@@ -160,7 +159,7 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
                     >
                       {SEVERITIES.map((s) => (
                         <option key={s} value={s}>
-                          Severity: {s}
+                          严重性：{s}
                         </option>
                       ))}
                     </select>
@@ -171,7 +170,7 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
                     >
                       {LIKELIHOODS.map((l) => (
                         <option key={l} value={l}>
-                          Likelihood: {l}
+                          可能性：{l}
                         </option>
                       ))}
                     </select>
@@ -179,7 +178,7 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
                   <textarea
                     defaultValue={h.justification ?? ""}
                     onBlur={(e) => updateHazard(step.id, h.id, { justification: e.target.value })}
-                    placeholder="Justification for significance determination"
+                    placeholder="重要性判定依据"
                     rows={1}
                     className="mt-2 w-full rounded-md border border-slate-300 px-2 py-1 text-xs"
                   />
@@ -190,22 +189,22 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
                         checked={h.requiresPreventiveControl}
                         onChange={(e) => updateHazard(step.id, h.id, { requiresPreventiveControl: e.target.checked })}
                       />
-                      Significant — requires a preventive control
+                      重大——需要预防控制措施
                     </label>
                     <button
                       onClick={() => removeHazard(step.id, h.id)}
                       className="text-xs font-medium text-red-600 hover:underline"
                     >
-                      Remove
+                      删除
                     </button>
                   </div>
                 </div>
               ))}
               <button
-                onClick={() => addHazard(step.id, "BIOLOGICAL", "New hazard")}
+                onClick={() => addHazard(step.id, "BIOLOGICAL", "新危害")}
                 className="text-xs font-medium text-brand-700 hover:underline"
               >
-                + Add hazard manually
+                + 手动添加危害
               </button>
             </div>
           </div>

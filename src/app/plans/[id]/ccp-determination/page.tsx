@@ -75,17 +75,17 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">CCP Determination (Principle 2)</h1>
+      <h1 className="text-2xl font-bold text-slate-900">CCP 判定（原则 2）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Run each significant hazard through the Codex four-question decision tree.
+        让每个重大危害通过 Codex 四问判定树。
       </p>
       <label className="mt-2 flex items-center gap-2 text-xs text-slate-600">
         <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
-        Show all hazards (not just those marked significant)
+        显示所有危害（不仅限于标记为重大的）
       </label>
 
       <ProductSelector products={products} activeProductId={activeId} onSelect={setActiveId} />
@@ -97,7 +97,7 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
           return (
             <div key={step.id} className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-800">
-                Step {step.order}: {step.name}
+                步骤 {step.order}：{step.name}
               </h2>
               <div className="mt-3 space-y-4">
                 {hazards.map((h) => {
@@ -108,7 +108,7 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
                       <p className="text-sm font-medium text-slate-800">
                         {h.type}: {h.description}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">{describeAnswerPath(answers) || "No answers yet"}</p>
+                      <p className="mt-1 text-xs text-slate-500">{describeAnswerPath(answers) || "暂无作答"}</p>
                       <p
                         className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
                           result.status === "CCP"
@@ -130,13 +130,13 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
                               onClick={() => answer(step.id, h.id, result.nextQuestion!, true)}
                               className="rounded-md bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700"
                             >
-                              Yes
+                              是
                             </button>
                             <button
                               onClick={() => answer(step.id, h.id, result.nextQuestion!, false)}
                               className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
                             >
-                              No
+                              否
                             </button>
                           </div>
                         </>

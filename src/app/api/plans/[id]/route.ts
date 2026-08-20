@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const plan = await db.plan.findFirst({
     where: { id: params.id, userId: user.id },
@@ -23,7 +23,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       haccpTeamMembers: { orderBy: { order: "asc" } },
     },
   });
-  if (!plan) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!plan) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   return NextResponse.json({
     ...plan,
@@ -33,10 +33,10 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const owned = await getOwnedPlan(params.id, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
@@ -55,10 +55,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const owned = await getOwnedPlan(params.id, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   await db.plan.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });

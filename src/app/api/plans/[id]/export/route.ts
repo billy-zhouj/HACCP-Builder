@@ -6,7 +6,7 @@ import { buildPlanDocx } from "@/lib/exportDocx";
 
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const plan = await db.plan.findFirst({
     where: { id: params.id, userId: user.id },
@@ -22,10 +22,10 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       haccpTeamMembers: { orderBy: { order: "asc" } },
     },
   });
-  if (!plan) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!plan) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   if (!canExportPlan(plan)) {
-    return NextResponse.json({ error: "Unlock this plan before exporting." }, { status: 402 });
+    return NextResponse.json({ error: "请先解锁此计划，再进行导出。" }, { status: 402 });
   }
 
   const buffer = await buildPlanDocx(plan);

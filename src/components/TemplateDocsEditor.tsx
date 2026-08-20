@@ -43,7 +43,7 @@ export default function TemplateDocsEditor({
     <div className="space-y-6">
       {notYetGenerated.length > 0 && (
         <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <h3 className="mb-2 text-sm font-semibold text-slate-800">Generate a document</h3>
+          <h3 className="mb-2 text-sm font-semibold text-slate-800">生成文档</h3>
           <div className="flex flex-wrap gap-2">
             {notYetGenerated.map((t) => (
               <button
@@ -56,7 +56,7 @@ export default function TemplateDocsEditor({
                 }}
                 className="rounded-md border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-100 disabled:opacity-50"
               >
-                {busyKey === t.key ? "Generating…" : `+ ${t.title}`}
+                {busyKey === t.key ? "生成中…" : `+ ${t.title}`}
               </button>
             ))}
           </div>
@@ -74,13 +74,13 @@ export default function TemplateDocsEditor({
                   onClick={() => onSave(sop.id, draft)}
                   className="rounded-md bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700"
                 >
-                  Save edits
+                  保存修改
                 </button>
                 <button
                   onClick={() => onDelete(sop.id)}
                   className="rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
                 >
-                  Remove
+                  删除
                 </button>
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function TemplateDocsEditor({
       })}
 
       {generated.length === 0 && notYetGenerated.length === 0 && (
-        <p className="text-sm text-slate-500">No documents available in this category yet.</p>
+        <p className="text-sm text-slate-500">此类别下暂无可用文档。</p>
       )}
     </div>
   );

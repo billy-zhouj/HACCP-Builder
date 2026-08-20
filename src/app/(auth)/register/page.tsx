@@ -26,7 +26,7 @@ export default function RegisterPage() {
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(typeof body.error === "string" ? body.error : "Registration failed.");
+      setError(typeof body.error === "string" ? body.error : "注册失败。");
       setLoading(false);
       return;
     }
@@ -42,10 +42,10 @@ export default function RegisterPage() {
 
   return (
     <main className="mx-auto max-w-sm px-6 py-16">
-      <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
+      <h1 className="text-2xl font-bold text-slate-900">创建您的账户</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700">Name (optional)</label>
+          <label className="block text-sm font-medium text-slate-700">姓名（可选）</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -53,7 +53,7 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Email</label>
+          <label className="block text-sm font-medium text-slate-700">邮箱</label>
           <input
             type="email"
             required
@@ -63,7 +63,7 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Password</label>
+          <label className="block text-sm font-medium text-slate-700">密码</label>
           <input
             type="password"
             required
@@ -79,11 +79,11 @@ export default function RegisterPage() {
           disabled={loading}
           className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
-          {loading ? "Creating account…" : "Create account"}
+          {loading ? "创建账户中…" : "创建账户"}
         </button>
       </form>
       <p className="mt-4 text-sm text-slate-500">
-        Already have an account? <Link href="/login" className="font-medium text-brand-600 hover:underline">Log in</Link>
+        已有账号？ <Link href="/login" className="font-medium text-brand-600 hover:underline">登录</Link>
       </p>
     </main>
   );

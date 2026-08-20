@@ -6,14 +6,14 @@ import { EMPTY_FACILITY_PROFILE, type FacilityProfile } from "@/types";
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const plan = await getOwnedPlan(params.id, user.id);
-  if (!plan) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!plan) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const templateKey = body.templateKey as string | undefined;
   const template = templateKey ? getTemplate(templateKey) : undefined;
-  if (!template) return NextResponse.json({ error: "Unknown template" }, { status: 400 });
+  if (!template) return NextResponse.json({ error: "未知模板" }, { status: 400 });
 
   const facility: FacilityProfile = plan.facilityProfile
     ? { ...EMPTY_FACILITY_PROFILE, ...JSON.parse(plan.facilityProfile) }

@@ -45,18 +45,17 @@ export default function GmpPage({ params }: { params: { id: string } }) {
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">GMPs & Prerequisite Programs</h1>
+      <h1 className="text-2xl font-bold text-slate-900">GMP 与前提方案</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Generate starter documents, then edit them to match your facility before finalizing.
+        生成起始文档，然后编辑以匹配您的企业情况，最后定稿。
       </p>
       <RegulatoryNote>
-        US — 21 CFR Part 117 Subpart B (Current Good Manufacturing Practice). Canada — CFIA
-        prerequisite program guidance under the SFCR. Both regimes expect the same underlying
-        practices.
+        美国——21 CFR Part 117 Subpart B（现行良好操作规范，cGMP）。加拿大——CFIA 依据 SFCR
+        的前提方案指南。两套制度期望相同的基础做法。
       </RegulatoryNote>
       <TemplateDocsEditor available={AVAILABLE} generated={generated} onGenerate={generate} onSave={save} onDelete={remove} />
     </div>

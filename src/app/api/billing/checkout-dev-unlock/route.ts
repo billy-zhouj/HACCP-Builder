@@ -22,17 +22,17 @@ export async function POST(req: Request) {
 
   if (!freeUnlockAllowed) {
     return NextResponse.json(
-      { error: "Free unlock is disabled. Configure Stripe billing, or set ALLOW_FREE_UNLOCK=true to allow it." },
+      { error: "免费解锁已禁用。请配置 Stripe 计费，或设置 ALLOW_FREE_UNLOCK=true 以启用。" },
       { status: 403 }
     );
   }
 
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
   const plan = await getOwnedPlan(body.planId, user.id);
-  if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+  if (!plan) return NextResponse.json({ error: "未找到计划" }, { status: 404 });
 
   const updated = await db.plan.update({
     where: { id: plan.id },

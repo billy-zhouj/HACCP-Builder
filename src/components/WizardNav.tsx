@@ -4,19 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const STEPS = [
-  { slug: "facility", label: "1. Facility Profile" },
-  { slug: "haccp-team", label: "2. HACCP Team (Prelim. 1)" },
-  { slug: "gmp", label: "3. GMPs & Prerequisites" },
-  { slug: "vendors", label: "4. Vendors / Suppliers" },
-  { slug: "products", label: "5. Products (Prelim. 2 & 3)" },
-  { slug: "process-flow", label: "6. Process Flow (Prelim. 4 & 5)" },
-  { slug: "formulations", label: "7. Formulations" },
-  { slug: "hazard-analysis", label: "8. Hazard Analysis (Principle 1)" },
-  { slug: "ccp-determination", label: "9. CCP Determination (Principle 2)" },
-  { slug: "preventive-controls", label: "10. Preventive Controls (3-7)" },
-  { slug: "recall", label: "11. Recall Plan" },
-  { slug: "sops", label: "12. SOPs" },
-  { slug: "review-export", label: "13. Review & Export" },
+  { slug: "facility", label: "1. 企业概况" },
+  { slug: "haccp-team", label: "2. HACCP 团队（预备步骤 1）" },
+  { slug: "gmp", label: "3. GMP 与前提方案" },
+  { slug: "vendors", label: "4. 供应商" },
+  { slug: "products", label: "5. 产品（预备步骤 2 和 3）" },
+  { slug: "process-flow", label: "6. 工艺流程（预备步骤 4 和 5）" },
+  { slug: "formulations", label: "7. 配方" },
+  { slug: "hazard-analysis", label: "8. 危害分析（原则 1）" },
+  { slug: "ccp-determination", label: "9. CCP 判定（原则 2）" },
+  { slug: "preventive-controls", label: "10. 预防控制措施（原则 3-7）" },
+  { slug: "recall", label: "11. 召回计划" },
+  { slug: "sops", label: "12. SOP" },
+  { slug: "review-export", label: "13. 审核与导出" },
 ];
 
 export default function WizardNav({ planId }: { planId: string }) {
@@ -43,7 +43,7 @@ export default function WizardNav({ planId }: { planId: string }) {
         })}
       </ul>
       <Link href="/dashboard" className="mt-4 block text-xs text-slate-400 hover:text-slate-600">
-        ← Back to dashboard
+        ← 返回控制台
       </Link>
     </nav>
   );

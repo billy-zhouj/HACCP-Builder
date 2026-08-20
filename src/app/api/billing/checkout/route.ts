@@ -13,13 +13,13 @@ import { stripe, STRIPE_ENABLED, PRICE_ONE_TIME, PRICE_STORAGE_SUBSCRIPTION } fr
  */
 export async function POST(req: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   if (!STRIPE_ENABLED || !stripe) {
     return NextResponse.json(
       {
         error:
-          "Billing isn't configured in this environment. Set STRIPE_SECRET_KEY (and price IDs) in .env to enable real checkout, or use /api/billing/checkout-dev-unlock in development.",
+          "此环境中未配置计费功能。请在 .env 中设置 STRIPE_SECRET_KEY（及价格 ID）以启用真实结账，或在开发环境中使用 /api/billing/checkout-dev-unlock。",
       },
       { status: 501 }
     );
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
   if (body.type === "plan_unlock") {
     const plan = await getOwnedPlan(body.planId, user.id);
-    if (!plan) return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+    if (!plan) return NextResponse.json({ error: "未找到计划" }, { status: 404 });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -55,5 +55,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   }
 
-  return NextResponse.json({ error: "Unknown checkout type" }, { status: 400 });
+  return NextResponse.json({ error: "未知的结账类型" }, { status: 400 });
 }

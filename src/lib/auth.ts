@@ -14,10 +14,10 @@ export const authOptions: AuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      name: "Email and password",
+      name: "邮箱和密码",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: "邮箱", type: "email" },
+        password: { label: "密码", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;

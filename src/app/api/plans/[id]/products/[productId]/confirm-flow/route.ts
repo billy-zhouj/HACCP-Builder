@@ -7,9 +7,9 @@ import { db } from "@/lib/db";
 // rather than a separate model, per the task spec.
 export async function POST(req: Request, { params }: { params: { id: string; productId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedProduct(params.id, params.productId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const updated = await db.product.update({

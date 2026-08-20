@@ -23,7 +23,7 @@ export default function HaccpTeamPage({ params }: { params: { id: string } }) {
     await fetch(`/api/plans/${params.id}/haccp-team`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "New team member" }),
+      body: JSON.stringify({ name: "新团队成员" }),
     });
     load();
   }
@@ -42,18 +42,16 @@ export default function HaccpTeamPage({ params }: { params: { id: string } }) {
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">HACCP Team (Preliminary Step 1)</h1>
+      <h1 className="text-2xl font-bold text-slate-900">HACCP 团队（预备步骤 1）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Assemble the multidisciplinary team responsible for developing and maintaining this plan.
-        This is distinct from the Recall Team on the Recall Plan step, though the same person can
-        serve on both.
+        组建负责制定和维护本计划的多学科团队。这与召回计划步骤中的召回团队不同，但同一人可以同时参与两个团队。
       </p>
 
-      <GuidancePanel title="Suggested roles to cover">{SUGGESTED_HACCP_TEAM_ROLES.join(" · ")}</GuidancePanel>
+      <GuidancePanel title="建议覆盖的角色">{SUGGESTED_HACCP_TEAM_ROLES.join(" · ")}</GuidancePanel>
 
       <div className="space-y-4">
         {members.map((m) => (
@@ -62,30 +60,30 @@ export default function HaccpTeamPage({ params }: { params: { id: string } }) {
               <input
                 value={m.name}
                 onChange={(e) => updateMember(m.id, { name: e.target.value })}
-                placeholder="Name"
+                placeholder="姓名"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={m.role ?? ""}
                 onChange={(e) => updateMember(m.id, { role: e.target.value })}
-                placeholder="Role / title"
+                placeholder="角色 / 职位"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={m.expertise ?? ""}
                 onChange={(e) => updateMember(m.id, { expertise: e.target.value })}
-                placeholder="Expertise (e.g. microbiology, engineering)"
+                placeholder="专业领域（如：微生物学、工程）"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={m.responsibilities ?? ""}
                 onChange={(e) => updateMember(m.id, { responsibilities: e.target.value })}
-                placeholder="Responsibilities on the team"
+                placeholder="在团队中的职责"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
             </div>
             <button onClick={() => removeMember(m.id)} className="mt-3 text-xs font-medium text-red-600 hover:underline">
-              Remove
+              删除
             </button>
           </div>
         ))}
@@ -93,7 +91,7 @@ export default function HaccpTeamPage({ params }: { params: { id: string } }) {
           onClick={addMember}
           className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
         >
-          + Add team member
+          + 添加团队成员
         </button>
       </div>
     </div>

@@ -5,12 +5,12 @@ import { suggestHazardsForStep, suggestAllergenHazardsForStep } from "@/lib/haza
 
 export async function POST(req: Request, { params }: { params: { id: string; productId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const product = await getOwnedProduct(params.id, params.productId, user.id);
-  if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!product) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
-  const name = body.name || "New step";
+  const name = body.name || "新步骤";
   const count = await db.processStep.count({ where: { productId: product.id } });
 
   const step = await db.processStep.create({

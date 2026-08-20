@@ -5,7 +5,7 @@ import { computeRetentionExpiry } from "@/lib/entitlements";
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const plans = await db.plan.findMany({ where: { userId: user.id }, orderBy: { updatedAt: "desc" } });
   return NextResponse.json(plans);
@@ -13,10 +13,10 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
-  const name = typeof body.name === "string" && body.name.trim() ? body.name.trim() : "Untitled HACCP Plan";
+  const name = typeof body.name === "string" && body.name.trim() ? body.name.trim() : "未命名 HACCP 计划";
 
   const plan = await db.plan.create({
     data: {

@@ -21,7 +21,7 @@ function LoginForm() {
     const res = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
     if (res?.error) {
-      setError("Invalid email or password.");
+      setError("邮箱或密码不正确。");
       return;
     }
     router.push(callbackUrl);
@@ -29,10 +29,10 @@ function LoginForm() {
 
   return (
     <main className="mx-auto max-w-sm px-6 py-16">
-      <h1 className="text-2xl font-bold text-slate-900">Log in</h1>
+      <h1 className="text-2xl font-bold text-slate-900">登录</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700">Email</label>
+          <label className="block text-sm font-medium text-slate-700">邮箱</label>
           <input
             type="email"
             required
@@ -42,7 +42,7 @@ function LoginForm() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Password</label>
+          <label className="block text-sm font-medium text-slate-700">密码</label>
           <input
             type="password"
             required
@@ -57,11 +57,11 @@ function LoginForm() {
           disabled={loading}
           className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
-          {loading ? "Signing in…" : "Log in"}
+          {loading ? "登录中…" : "登录"}
         </button>
       </form>
       <p className="mt-4 text-sm text-slate-500">
-        No account? <Link href="/register" className="font-medium text-brand-600 hover:underline">Register</Link>
+        没有账号？ <Link href="/register" className="font-medium text-brand-600 hover:underline">注册</Link>
       </p>
     </main>
   );

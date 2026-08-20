@@ -50,7 +50,7 @@ export default function FormulationsPage({ params }: { params: { id: string } })
     await fetch(`/api/plans/${params.id}/products/${active.id}/ingredients`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "New ingredient" }),
+      body: JSON.stringify({ name: "新原料" }),
     });
     load();
   }
@@ -77,21 +77,17 @@ export default function FormulationsPage({ params }: { params: { id: string } })
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Formulations</h1>
+      <h1 className="text-2xl font-bold text-slate-900">配方</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Ingredient-level detail for the selected product. Allergen flags here automatically
-        suggest cross-contact hazards on the Hazard Analysis step and drive that product&apos;s
-        allergen declaration inside the allergen-control SOP.
+        所选产品的原料级详细信息。此处的过敏原标记会自动在危害分析步骤建议交叉接触危害，并驱动过敏原控制 SOP 中该产品的过敏原声明。
       </p>
 
-      <GuidancePanel title="US & Canada priority allergens">
-        Shared: milk, eggs, fish, crustacean shellfish, tree nuts, peanuts, wheat, soybeans,
-        sesame. Canada also requires: mustard, gluten sources beyond wheat (barley, rye, oats,
-        triticale), and added sulphites ≥10 ppm.
+      <GuidancePanel title="美国与加拿大优先过敏原">
+        共有：牛奶、鸡蛋、鱼类、甲壳贝类、坚果、花生、小麦、大豆、芝麻。加拿大还要求：芥末、小麦以外的麸质来源（大麦、黑麦、燕麦、黑小麦），以及添加亚硫酸盐 ≥10 ppm。
       </GuidancePanel>
 
       <ProductSelector products={products} activeProductId={activeId} onSelect={setActiveId} />
@@ -104,25 +100,25 @@ export default function FormulationsPage({ params }: { params: { id: string } })
                 <input
                   defaultValue={i.name}
                   onBlur={(e) => updateIngredient(i.id, { name: e.target.value })}
-                  placeholder="Ingredient name"
+                  placeholder="原料名称"
                   className="rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />
                 <input
                   defaultValue={i.percentageOfFormulation ?? ""}
                   onBlur={(e) => updateIngredient(i.id, { percentageOfFormulation: e.target.value })}
-                  placeholder="% of formulation (e.g. 12.5%)"
+                  placeholder="配方占比（如 12.5%）"
                   className="rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />
                 <input
                   defaultValue={i.functionalRole ?? ""}
                   onBlur={(e) => updateIngredient(i.id, { functionalRole: e.target.value })}
-                  placeholder="Functional role (e.g. preservative)"
+                  placeholder="功能作用（如：防腐剂）"
                   className="rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />
                 <input
                   defaultValue={i.countryOfOrigin ?? ""}
                   onBlur={(e) => updateIngredient(i.id, { countryOfOrigin: e.target.value })}
-                  placeholder="Country of origin"
+                  placeholder="原产国"
                   className="rounded-md border border-slate-300 px-3 py-2 text-sm"
                 />
                 <select
@@ -130,7 +126,7 @@ export default function FormulationsPage({ params }: { params: { id: string } })
                   onChange={(e) => updateIngredient(i.id, { supplierVendorId: e.target.value || null })}
                   className="rounded-md border border-slate-300 px-3 py-2 text-sm"
                 >
-                  <option value="">No linked supplier</option>
+                  <option value="">未关联供应商</option>
                   {vendors.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.name}
@@ -143,7 +139,7 @@ export default function FormulationsPage({ params }: { params: { id: string } })
                     checked={i.isAllergen}
                     onChange={(e) => updateIngredient(i.id, { isAllergen: e.target.checked })}
                   />
-                  Contains an allergen
+                  含有过敏原
                 </label>
               </div>
 
@@ -159,13 +155,13 @@ export default function FormulationsPage({ params }: { params: { id: string } })
               <textarea
                 defaultValue={i.notes ?? ""}
                 onBlur={(e) => updateIngredient(i.id, { notes: e.target.value })}
-                placeholder="Notes"
+                placeholder="备注"
                 rows={1}
                 className="mt-3 w-full rounded-md border border-slate-300 px-3 py-2 text-xs"
               />
 
               <button onClick={() => removeIngredient(i.id)} className="mt-3 text-xs font-medium text-red-600 hover:underline">
-                Remove ingredient
+                删除原料
               </button>
             </div>
           ))}
@@ -174,7 +170,7 @@ export default function FormulationsPage({ params }: { params: { id: string } })
             onClick={addIngredient}
             className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
           >
-            + Add ingredient
+            + 添加原料
           </button>
         </div>
       )}

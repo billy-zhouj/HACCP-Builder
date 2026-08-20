@@ -10,9 +10,9 @@ async function getOwnedMember(planId: string, memberId: string, userId: string) 
 
 export async function PATCH(req: Request, { params }: { params: { id: string; memberId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedMember(params.id, params.memberId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
@@ -25,9 +25,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; me
 
 export async function DELETE(_req: Request, { params }: { params: { id: string; memberId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedMember(params.id, params.memberId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   await db.haccpTeamMember.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });

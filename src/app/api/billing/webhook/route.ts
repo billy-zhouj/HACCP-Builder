@@ -8,7 +8,7 @@ import { computeRetentionExpiry } from "@/lib/entitlements";
 // verification, so this route intentionally does not use req.json().
 export async function POST(req: Request) {
   if (!STRIPE_ENABLED || !stripe) {
-    return NextResponse.json({ error: "Billing not configured" }, { status: 501 });
+    return NextResponse.json({ error: "未配置计费功能" }, { status: 501 });
   }
 
   const sig = req.headers.get("stripe-signature");
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     if (!sig || !webhookSecret) throw new Error("Missing signature or webhook secret");
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
-    return NextResponse.json({ error: `Webhook signature verification failed: ${err}` }, { status: 400 });
+    return NextResponse.json({ error: `Webhook 签名验证失败：${err}` }, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {

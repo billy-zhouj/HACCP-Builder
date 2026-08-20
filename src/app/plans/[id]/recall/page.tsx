@@ -32,7 +32,7 @@ export default function RecallPage({ params }: { params: { id: string } }) {
     await fetch(`/api/plans/${params.id}/recall-contacts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role: "Recall Coordinator", name: "New contact" }),
+      body: JSON.stringify({ role: "召回协调员", name: "新联系人" }),
     });
     load();
   }
@@ -89,27 +89,26 @@ export default function RecallPage({ params }: { params: { id: string } }) {
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   const mostRecent = [...records].sort((a, b) => new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime())[0];
   const overdue = !mostRecent || new Date(mostRecent.performedAt).getTime() < Date.now() - 365 * 24 * 60 * 60 * 1000;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Recall Plan</h1>
+      <h1 className="text-2xl font-bold text-slate-900">召回计划</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Assign a recall team, log mock recalls, and generate the written Recall Plan document.
+        指定召回团队、记录模拟召回，并生成书面召回计划文档。
       </p>
 
       {overdue && (
-        <GuidancePanel title="Mock recall overdue or missing">
-          Both FDA/USDA FSIS and CFIA expect at least one mock recall annually to verify
-          traceability. Log one below.
+        <GuidancePanel title="模拟召回已逾期或缺失">
+          FDA/USDA FSIS 和 CFIA 都期望每年至少进行一次模拟召回以验证可追溯性。请在下方记录一次。
         </GuidancePanel>
       )}
 
-      <h2 className="mt-6 text-sm font-semibold text-slate-800">Recall Team</h2>
-      <p className="text-xs text-slate-500 mb-2">Suggested roles: {SUGGESTED_RECALL_ROLES.join(" · ")}</p>
+      <h2 className="mt-6 text-sm font-semibold text-slate-800">召回团队</h2>
+      <p className="text-xs text-slate-500 mb-2">建议角色：{SUGGESTED_RECALL_ROLES.join(" · ")}</p>
       <div className="space-y-3">
         {contacts.map((c) => (
           <div key={c.id} className="rounded-lg border border-slate-200 bg-white p-4">
@@ -117,30 +116,30 @@ export default function RecallPage({ params }: { params: { id: string } }) {
               <input
                 defaultValue={c.role}
                 onBlur={(e) => updateContact(c.id, { role: e.target.value })}
-                placeholder="Role"
+                placeholder="角色"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 defaultValue={c.name}
                 onBlur={(e) => updateContact(c.id, { name: e.target.value })}
-                placeholder="Name"
+                placeholder="姓名"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 defaultValue={c.phone ?? ""}
                 onBlur={(e) => updateContact(c.id, { phone: e.target.value })}
-                placeholder="Phone"
+                placeholder="电话"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 defaultValue={c.email ?? ""}
                 onBlur={(e) => updateContact(c.id, { email: e.target.value })}
-                placeholder="Email"
+                placeholder="邮箱"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
             </div>
             <button onClick={() => removeContact(c.id)} className="mt-3 text-xs font-medium text-red-600 hover:underline">
-              Remove
+              删除
             </button>
           </div>
         ))}
@@ -148,20 +147,20 @@ export default function RecallPage({ params }: { params: { id: string } }) {
           onClick={addContact}
           className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
         >
-          + Add recall team member
+          + 添加召回团队成员
         </button>
       </div>
 
-      <h2 className="mt-8 text-sm font-semibold text-slate-800">Mock Recall Log</h2>
+      <h2 className="mt-8 text-sm font-semibold text-slate-800">模拟召回记录</h2>
       <div className="mt-2 space-y-2">
         {records.map((r) => (
           <div key={r.id} className="flex items-center justify-between rounded-md border border-slate-200 bg-white p-3 text-sm">
             <span>
-              {new Date(r.performedAt).toLocaleDateString()} — {r.performedBy ?? "—"}, traced {r.percentTraced ?? "—"}.{" "}
+              {new Date(r.performedAt).toLocaleDateString()} —— {r.performedBy ?? "—"}，追溯率 {r.percentTraced ?? "—"}。{" "}
               {r.resultsSummary}
             </span>
             <button onClick={() => removeRecord(r.id)} className="text-xs font-medium text-red-600 hover:underline">
-              Remove
+              删除
             </button>
           </div>
         ))}
@@ -176,19 +175,19 @@ export default function RecallPage({ params }: { params: { id: string } }) {
         <input
           value={newRecord.performedBy}
           onChange={(e) => setNewRecord((r) => ({ ...r, performedBy: e.target.value }))}
-          placeholder="Performed by"
+          placeholder="执行人"
           className="rounded-md border border-slate-300 px-2 py-1 text-sm"
         />
         <input
           value={newRecord.percentTraced}
           onChange={(e) => setNewRecord((r) => ({ ...r, percentTraced: e.target.value }))}
-          placeholder="% traced"
+          placeholder="追溯率 %"
           className="rounded-md border border-slate-300 px-2 py-1 text-sm"
         />
         <input
           value={newRecord.resultsSummary}
           onChange={(e) => setNewRecord((r) => ({ ...r, resultsSummary: e.target.value }))}
-          placeholder="Results summary"
+          placeholder="结果摘要"
           className="rounded-md border border-slate-300 px-2 py-1 text-sm"
         />
       </div>
@@ -196,10 +195,10 @@ export default function RecallPage({ params }: { params: { id: string } }) {
         onClick={addRecord}
         className="mt-2 rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
       >
-        + Log mock recall
+        + 记录模拟召回
       </button>
 
-      <h2 className="mt-8 text-sm font-semibold text-slate-800">Recall Plan Document</h2>
+      <h2 className="mt-8 text-sm font-semibold text-slate-800">召回计划文档</h2>
       <div className="mt-2">
         <TemplateDocsEditor available={AVAILABLE} generated={generated} onGenerate={generate} onSave={save} onDelete={remove} />
       </div>

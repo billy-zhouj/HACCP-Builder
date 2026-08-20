@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: SITE_KEYWORDS,
   applicationName: SITE_NAME,
-  authors: [{ name: "HACCP-Builder" }],
-  creator: "HACCP-Builder",
-  publisher: "HACCP-Builder",
+  authors: [{ name: "HACCP 计划生成器" }],
+  creator: "HACCP 计划生成器",
+  publisher: "HACCP 计划生成器",
   alternates: {
     canonical: "/",
   },
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    locale: "en_US",
+    locale: "zh_CN",
   },
   twitter: {
     card: "summary_large_image",
@@ -66,7 +66,7 @@ const structuredData = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-US">
+    <html lang="zh-CN">
       <head>
         <script
           type="application/ld+json"

@@ -13,29 +13,29 @@ export default async function SiteHeader() {
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-brand-600 text-sm font-bold text-white">
             H
           </span>
-          <span className="text-lg font-semibold text-haccpslate">HACCP-Builder</span>
+          <span className="text-lg font-semibold text-haccpslate">HACCP 计划生成器</span>
         </Link>
         <nav className="flex items-center gap-6">
           <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-            Pricing
+            价格
           </Link>
           {session?.user ? (
             <>
               <Link href="/dashboard" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                Dashboard
+                控制台
               </Link>
               <SignOutButton />
             </>
           ) : (
             <>
               <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                Log in
+                登录
               </Link>
               <Link
                 href="/register"
                 className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
               >
-                Start free
+                免费开始
               </Link>
             </>
           )}

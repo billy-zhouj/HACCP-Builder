@@ -59,18 +59,16 @@ export default function PreventiveControlsPage({ params }: { params: { id: strin
     });
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Preventive Controls (Principles 3-7)</h1>
+      <h1 className="text-2xl font-bold text-slate-900">预防控制措施（原则 3-7）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Set the critical limit, monitoring, corrective action, verification, recordkeeping, and
-        responsible party for each CCP / process preventive control.
+        为每个 CCP / 工艺预防控制设定关键限值、监控、纠正措施、验证、记录保存和责任人。
       </p>
-      <GuidancePanel title="No CCPs listed?">
-        Complete CCP Determination first — only hazards designated CCP or PRW (process preventive
-        control) show up here.
+      <GuidancePanel title="没有列出 CCP？">
+        请先完成 CCP 判定——只有被指定为 CCP 或 PRW（工艺预防控制）的危害才会显示在这里。
       </GuidancePanel>
 
       <ProductSelector products={products} activeProductId={activeId} onSelect={setActiveId} />
@@ -82,7 +80,7 @@ export default function PreventiveControlsPage({ params }: { params: { id: strin
           return (
             <div key={step.id} className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-slate-800">
-                Step {step.order}: {step.name}
+                步骤 {step.order}：{step.name}
               </h2>
               {ccps.map((h) => (
                 <div key={h.id} className="mt-3 rounded-md border border-slate-100 bg-slate-50 p-3">
@@ -93,43 +91,43 @@ export default function PreventiveControlsPage({ params }: { params: { id: strin
                     <input
                       defaultValue={h.criticalLimit ?? ""}
                       onBlur={(e) => update(step.id, h.id, { criticalLimit: e.target.value })}
-                      placeholder="Critical limit (Principle 3)"
+                      placeholder="关键限值（原则 3）"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.monitoringProcedure ?? ""}
                       onBlur={(e) => update(step.id, h.id, { monitoringProcedure: e.target.value })}
-                      placeholder="Monitoring procedure (Principle 4)"
+                      placeholder="监控程序（原则 4）"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.monitoringFrequency ?? ""}
                       onBlur={(e) => update(step.id, h.id, { monitoringFrequency: e.target.value })}
-                      placeholder="Monitoring frequency"
+                      placeholder="监控频率"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.correctionAction ?? ""}
                       onBlur={(e) => update(step.id, h.id, { correctionAction: e.target.value })}
-                      placeholder="Corrective action (Principle 5)"
+                      placeholder="纠正措施（原则 5）"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.verificationProcedure ?? ""}
                       onBlur={(e) => update(step.id, h.id, { verificationProcedure: e.target.value })}
-                      placeholder="Verification procedure (Principle 6)"
+                      placeholder="验证程序（原则 6）"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.recordkeepingProcedure ?? ""}
                       onBlur={(e) => update(step.id, h.id, { recordkeepingProcedure: e.target.value })}
-                      placeholder="Recordkeeping procedure (Principle 7)"
+                      placeholder="记录保存程序（原则 7）"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                     <input
                       defaultValue={h.responsibleParty ?? ""}
                       onBlur={(e) => update(step.id, h.id, { responsibleParty: e.target.value })}
-                      placeholder="Responsible party"
+                      placeholder="责任人"
                       className="rounded-md border border-slate-300 px-2 py-1 text-xs"
                     />
                   </div>

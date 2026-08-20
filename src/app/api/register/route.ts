@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 
 const registerSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(8, "密码长度至少为 8 个字符"),
   name: z.string().optional(),
 });
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const email = parsed.data.email.toLowerCase().trim();
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) {
-    return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
+    return NextResponse.json({ error: "该邮箱已被注册。" }, { status: 409 });
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);

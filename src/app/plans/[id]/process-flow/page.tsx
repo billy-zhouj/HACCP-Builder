@@ -78,22 +78,21 @@ export default function ProcessFlowPage({ params }: { params: { id: string } }) 
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Process Flow (Preliminary Steps 4 & 5)</h1>
+      <h1 className="text-2xl font-bold text-slate-900">工艺流程（预备步骤 4 和 5）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Map out each step this product goes through, receiving to shipping, then confirm the
-        diagram matches what actually happens on the floor.
+        绘制该产品经历的每个步骤，从收货到发运，然后确认流程图与车间实际情况一致。
       </p>
 
       <ProductSelector products={products} activeProductId={activeId} onSelect={setActiveId} />
 
       {active && (
         <>
-          <GuidancePanel title="Common step names">
-            {COMMON_STEP_NAMES.slice(0, 12).join(" · ")} — click one below to add it, or type your own.
+          <GuidancePanel title="常用步骤名称">
+            {COMMON_STEP_NAMES.slice(0, 12).join(" · ")} —— 点击下方按钮添加，或自行输入。
           </GuidancePanel>
 
           <div className="mb-4 flex flex-wrap gap-2">
@@ -119,13 +118,13 @@ export default function ProcessFlowPage({ params }: { params: { id: string } }) 
                     className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium"
                   />
                   <button onClick={() => removeStep(s.id)} className="text-xs font-medium text-red-600 hover:underline">
-                    Remove
+                    删除
                   </button>
                 </div>
                 <textarea
                   defaultValue={s.description ?? ""}
                   onBlur={(e) => updateStep(s.id, { description: e.target.value })}
-                  placeholder="Step description"
+                  placeholder="步骤描述"
                   rows={1}
                   className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-xs"
                 />
@@ -134,23 +133,23 @@ export default function ProcessFlowPage({ params }: { params: { id: string } }) 
           </div>
 
           <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
-            <h2 className="text-sm font-semibold text-slate-800">Preliminary Step 5 — on-site confirmation</h2>
+            <h2 className="text-sm font-semibold text-slate-800">预备步骤 5——现场确认</h2>
             <p className="mt-1 text-xs text-slate-500">
               {active.flowConfirmedAt
-                ? `Confirmed by ${active.flowConfirmedBy ?? "—"} on ${new Date(active.flowConfirmedAt).toLocaleDateString()}.`
-                : "Not yet confirmed — walk the floor and confirm this diagram matches actual practice."}
+                ? `由 ${active.flowConfirmedBy ?? "—"} 于 ${new Date(active.flowConfirmedAt).toLocaleDateString()} 确认。`
+                : "尚未确认——请到现场走查并确认此流程图与实际操作一致。"}
             </p>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <input
                 value={confirmedBy}
                 onChange={(e) => setConfirmedBy(e.target.value)}
-                placeholder="Confirmed by (name)"
+                placeholder="确认人（姓名）"
                 className="rounded-md border border-slate-300 px-2 py-1 text-sm"
               />
               <input
                 value={confirmNotes}
                 onChange={(e) => setConfirmNotes(e.target.value)}
-                placeholder="Notes"
+                placeholder="备注"
                 className="rounded-md border border-slate-300 px-2 py-1 text-sm"
               />
             </div>
@@ -158,7 +157,7 @@ export default function ProcessFlowPage({ params }: { params: { id: string } }) 
               onClick={confirmFlow}
               className="mt-3 rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
             >
-              Confirm flow diagram
+              确认流程图
             </button>
           </div>
         </>

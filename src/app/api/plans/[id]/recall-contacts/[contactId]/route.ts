@@ -10,9 +10,9 @@ async function getOwnedContact(planId: string, contactId: string, userId: string
 
 export async function PATCH(req: Request, { params }: { params: { id: string; contactId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedContact(params.id, params.contactId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
@@ -25,9 +25,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; co
 
 export async function DELETE(_req: Request, { params }: { params: { id: string; contactId: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedContact(params.id, params.contactId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   await db.recallContact.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });

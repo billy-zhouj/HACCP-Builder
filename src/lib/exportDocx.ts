@@ -171,38 +171,38 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
 
   // --- Title page + index --------------------------------------------------
   children.push(
-    new Paragraph({ text: "HACCP Plan", heading: HeadingLevel.TITLE }),
+    new Paragraph({ text: "HACCP 计划", heading: HeadingLevel.TITLE }),
     new Paragraph({ text: plan.name, heading: HeadingLevel.HEADING_2 }),
     new Paragraph({ text: "" }),
     new Paragraph({
       children: [
         new TextRun({
           text:
-            "Built on the Codex Alimentarius / NACMCF HACCP structure (5 Preliminary Steps, 7 Principles). See the Regulatory Basis note in each section for the specific US (FDA/USDA FSIS) and Canadian (CFIA) citations that apply to this facility's scope.",
+            "本计划依据 Codex Alimentarius（国际食品法典）/ NACMCF 的 HACCP 结构编制（5 个预备步骤、7 项原则）。请参阅各章节中的法规依据说明，了解适用于本企业范围的美国（FDA/USDA FSIS）和加拿大（CFIA）具体条款。",
           italics: true,
         }),
       ],
     }),
     new Paragraph({ text: "" }),
-    new Paragraph({ children: [new TextRun({ text: "Contents", bold: true, size: 28 })] }),
-    new TableOfContents("Contents", { hyperlink: true, headingStyleRange: "1-2" })
+    new Paragraph({ children: [new TextRun({ text: "目录", bold: true, size: 28 })] }),
+    new TableOfContents("目录", { hyperlink: true, headingStyleRange: "1-2" })
   );
 
   // --- 1. Facility Profile -------------------------------------------------
   children.push(
-    sectionHeading("1. Facility Profile"),
-    new Paragraph({ text: `Facility name: ${facility.facilityName ?? ""}` }),
-    new Paragraph({ text: `Address: ${facility.address ?? ""}` }),
-    new Paragraph({ text: `Food categories: ${facility.foodCategories ?? ""}` }),
+    sectionHeading("1. 企业概况"),
+    new Paragraph({ text: `企业名称：${facility.facilityName ?? ""}` }),
+    new Paragraph({ text: `地址：${facility.address ?? ""}` }),
+    new Paragraph({ text: `食品类别：${facility.foodCategories ?? ""}` }),
     new Paragraph({
-      text: `Regulatory scope(s): ${
+      text: `法规范围：${
         (facility.regulatoryScopes ?? []).map(regulatoryScopeLabel).join("; ") || ""
       }`,
     }),
-    new Paragraph({ text: `CFIA licence number: ${facility.cfiaLicenseNumber ?? ""}` }),
-    new Paragraph({ text: `FDA registration number: ${facility.fdaRegistrationNumber ?? ""}` }),
+    new Paragraph({ text: `CFIA 许可证号：${facility.cfiaLicenseNumber ?? ""}` }),
+    new Paragraph({ text: `FDA 注册号：${facility.fdaRegistrationNumber ?? ""}` }),
     new Paragraph({
-      text: `Responsible individual / HACCP team leader: ${facility.responsibleIndividual ?? ""} (${
+      text: `负责人 / HACCP 团队组长：${facility.responsibleIndividual ?? ""} (${
         facility.responsibleIndividualContact ?? ""
       })`,
     }),
@@ -211,7 +211,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
       children: [
         new TextRun({
           text:
-            "If this facility processes seafood, juice, or meat/poultry, this plan must additionally satisfy that sector's specific regulation (21 CFR 123, 21 CFR 120, or 9 CFR 417 respectively) on top of the general HACCP structure used throughout this document.",
+            "如本企业加工海产品、果汁或肉类/禽肉产品，除本文件采用的一般 HACCP 结构外，本计划还必须满足该行业的具体法规要求（分别对应 21 CFR 123、21 CFR 120 或 9 CFR 417）。",
           italics: true,
         }),
       ],
@@ -219,13 +219,13 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   );
 
   // --- 2. Preliminary Step 1: HACCP Team -----------------------------------
-  children.push(sectionHeading("2. HACCP Team (Preliminary Step 1)"));
+  children.push(sectionHeading("2. HACCP 团队（预备步骤 1）"));
   if (team.length === 0) {
-    children.push(new Paragraph({ text: "No HACCP team members have been added yet." }));
+    children.push(new Paragraph({ text: "尚未添加 HACCP 团队成员。" }));
   } else {
     const teamWidths = pctToDxa([20, 20, 25, 35]);
     const rows = [
-      headerRow(["Name", "Role", "Expertise", "Responsibilities"], teamWidths),
+      headerRow(["姓名", "角色", "专业领域", "职责"], teamWidths),
       ...team.map((m) =>
         dataRow([m.name, m.role ?? "—", m.expertise ?? "—", m.responsibilities ?? "—"], teamWidths)
       ),
@@ -235,30 +235,30 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   children.push(new Paragraph({ text: "" }));
 
   // --- 3. Products (Preliminary Steps 2 & 3) -------------------------------
-  children.push(sectionHeading("3. Products (Preliminary Steps 2 & 3)"));
+  children.push(sectionHeading("3. 产品（预备步骤 2 和 3）"));
   if (products.length === 0) {
-    children.push(new Paragraph({ text: "No products have been added to this plan yet." }));
+    children.push(new Paragraph({ text: "尚未向此计划添加产品。" }));
   } else {
     for (const p of products) {
       children.push(new Paragraph({ text: p.name, heading: HeadingLevel.HEADING_2 }));
-      children.push(new Paragraph({ text: `Product description & distribution: ${p.productDescription ?? ""}` }));
-      children.push(new Paragraph({ text: `Intended use: ${p.intendedUse ?? ""}` }));
-      children.push(new Paragraph({ text: `Intended consumer: ${p.intendedConsumer ?? ""}` }));
-      children.push(new Paragraph({ text: `Packaging type: ${p.packagingType ?? ""}` }));
-      children.push(new Paragraph({ text: `Shelf life & storage: ${p.shelfLifeAndStorage ?? ""}` }));
+      children.push(new Paragraph({ text: `产品描述与分销：${p.productDescription ?? ""}` }));
+      children.push(new Paragraph({ text: `预期用途：${p.intendedUse ?? ""}` }));
+      children.push(new Paragraph({ text: `预期消费者：${p.intendedConsumer ?? ""}` }));
+      children.push(new Paragraph({ text: `包装类型：${p.packagingType ?? ""}` }));
+      children.push(new Paragraph({ text: `保质期与储存：${p.shelfLifeAndStorage ?? ""}` }));
       children.push(new Paragraph({ text: "" }));
     }
   }
 
   // --- 4. Approved Suppliers ------------------------------------------------
-  children.push(sectionHeading("4. Approved Suppliers"));
+  children.push(sectionHeading("4. 合格供应商"));
   const vendors = [...plan.vendors].sort((a, b) => a.order - b.order);
   if (vendors.length === 0) {
-    children.push(new Paragraph({ text: "No vendors/suppliers have been added to this plan yet." }));
+    children.push(new Paragraph({ text: "尚未向此计划添加供应商。" }));
   } else {
     const vendorWidths = pctToDxa([20, 26, 12, 14, 14, 14]);
     const rows = [
-      headerRow(["Vendor", "Materials supplied", "Status", "Certification", "Guarantee", "Contact"], vendorWidths),
+      headerRow(["供应商", "供应物料", "状态", "认证", "保证书", "联系人"], vendorWidths),
       ...vendors.map((v) =>
         dataRow(
           [
@@ -266,7 +266,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
             v.materialsSupplied ?? "—",
             v.status,
             v.certification ?? "—",
-            v.guaranteeOnFile ? `Yes${v.guaranteeExpiry ? ` (exp. ${v.guaranteeExpiry})` : ""}` : "No",
+            v.guaranteeOnFile ? `有${v.guaranteeExpiry ? `（有效期至 ${v.guaranteeExpiry}）` : ""}` : "无",
             [v.contactName, v.phone, v.email].filter(Boolean).join(", ") || "—",
           ],
           vendorWidths
@@ -278,10 +278,10 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   children.push(new Paragraph({ text: "" }));
 
   // --- 5. GMPs & Prerequisite Programs --------------------------------------
-  children.push(sectionHeading("5. GMPs & Prerequisite Programs"));
+  children.push(sectionHeading("5. GMP 与前提方案"));
   const gmpSops = plan.sops.filter((s) => getTemplate(s.templateKey)?.category === "gmp");
   if (gmpSops.length === 0) {
-    children.push(new Paragraph({ text: "No GMP / prerequisite program documents have been generated yet." }));
+    children.push(new Paragraph({ text: "尚未生成 GMP / 前提方案文档。" }));
   } else {
     for (const sop of gmpSops) {
       children.push(...markdownToBlocks(sop.content, 1));
@@ -290,45 +290,45 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   }
 
   // --- 6. Process Flow & Formulations (Preliminary Steps 4 & 5) -----------
-  children.push(sectionHeading("6. Process Flow & Formulations (Preliminary Steps 4 & 5)"));
+  children.push(sectionHeading("6. 工艺流程与配方（预备步骤 4 和 5）"));
 
   for (const product of products) {
     children.push(new Paragraph({ text: product.name, heading: HeadingLevel.HEADING_2 }));
 
     const steps = [...product.processSteps].sort((a, b) => a.order - b.order);
     if (steps.length === 0) {
-      children.push(new Paragraph({ text: "No process steps recorded for this product." }));
+      children.push(new Paragraph({ text: "未记录此产品的工艺步骤。" }));
     } else {
       const stepWidths = pctToDxa([12, 30, 58]);
       const rows = [
-        headerRow(["Step #", "Name", "Description"], stepWidths),
+        headerRow(["步骤 #", "名称", "描述"], stepWidths),
         ...steps.map((s) => dataRow([String(s.order), s.name, s.description ?? "—"], stepWidths)),
       ];
       children.push(makeTable(stepWidths, rows));
     }
     children.push(new Paragraph({ text: "" }));
 
-    children.push(new Paragraph({ text: "Preliminary Step 5 — on-site confirmation of flow diagram:" }));
+    children.push(new Paragraph({ text: "预备步骤 5——流程图现场确认：" }));
     children.push(
       new Paragraph({
         text: product.flowConfirmedAt
-          ? `Confirmed by ${product.flowConfirmedBy ?? "—"} on ${product.flowConfirmedAt.toLocaleDateString(
+          ? `由 ${product.flowConfirmedBy ?? "—"} 于 ${product.flowConfirmedAt.toLocaleDateString(
               "en-US"
-            )}. ${product.flowConfirmationNotes ?? ""}`.trim()
-          : "Not yet confirmed on-site — before finalizing this plan, walk the actual production floor and confirm the flow diagram above matches what happens in practice.",
+            )} 确认。${product.flowConfirmationNotes ?? ""}`.trim()
+          : "尚未现场确认——定稿前，请到实际生产现场走查并确认以上流程图与实际情况一致。",
       })
     );
     children.push(new Paragraph({ text: "" }));
 
     const ingredients = [...product.ingredients].sort((a, b) => a.order - b.order);
-    children.push(new Paragraph({ text: "Formulation", heading: HeadingLevel.HEADING_3 }));
+    children.push(new Paragraph({ text: "配方", heading: HeadingLevel.HEADING_3 }));
     if (ingredients.length === 0) {
-      children.push(new Paragraph({ text: "No ingredients recorded for this product." }));
+      children.push(new Paragraph({ text: "未记录此产品的原料。" }));
     } else {
       const ingWidths = pctToDxa([22, 12, 18, 14, 10, 24]);
       const rows = [
         headerRow(
-          ["Ingredient", "% of formulation", "Functional role", "Country of origin", "Allergen?", "Allergen type"],
+          ["原料", "配方占比 %", "功能作用", "原产国", "是否过敏原", "过敏原类型"],
           ingWidths
         ),
         ...ingredients.map((i) =>
@@ -338,7 +338,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
               i.percentageOfFormulation ?? "—",
               i.functionalRole ?? "—",
               i.countryOfOrigin ?? "—",
-              i.isAllergen ? "Yes" : "No",
+              i.isAllergen ? "是" : "否",
               i.allergenType ?? "—",
             ],
             ingWidths
@@ -351,7 +351,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   }
 
   // --- 7. Hazard Analysis & CCP Determination (Principles 1 & 2) ----------
-  children.push(sectionHeading("7. Hazard Analysis & CCP Determination (Principles 1 & 2)"));
+  children.push(sectionHeading("7. 危害分析与 CCP 判定（原则 1 和 2）"));
 
   for (const product of products) {
     const steps = [...product.processSteps].sort((a, b) => a.order - b.order);
@@ -359,20 +359,20 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
     children.push(new Paragraph({ text: product.name, heading: HeadingLevel.HEADING_2 }));
 
     for (const step of steps) {
-      children.push(new Paragraph({ text: `Step ${step.order}: ${step.name}` }));
+      children.push(new Paragraph({ text: `步骤 ${step.order}：${step.name}` }));
       if (step.hazards.length === 0) {
-        children.push(new Paragraph({ text: "No hazards recorded for this step." }));
+        children.push(new Paragraph({ text: "未记录此步骤的危害。" }));
         continue;
       }
       const hazardWidths = pctToDxa([12, 26, 8, 12, 20, 22]);
       const rows = [
-        headerRow(["Hazard type", "Description", "Sig.?", "CCP status", "Critical limit", "Monitoring"], hazardWidths),
+        headerRow(["危害类型", "描述", "重大?", "CCP 状态", "关键限值", "监控"], hazardWidths),
         ...step.hazards.map((h) =>
           dataRow(
             [
               h.type,
               h.description,
-              h.requiresPreventiveControl ? "Yes" : "No",
+              h.requiresPreventiveControl ? "是" : "否",
               h.ccpStatus,
               h.criticalLimit ?? "—",
               h.monitoringProcedure ?? "—",
@@ -387,12 +387,12 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   }
 
   // --- 8. Preventive Controls Detail (Principles 3-7) ----------------------
-  children.push(sectionHeading("8. Preventive Controls Detail (Principles 3-7)"));
+  children.push(sectionHeading("8. 预防控制措施详情（原则 3-7）"));
   const anyCcps = products.some((p) =>
     p.processSteps.some((s) => s.hazards.some((h) => h.ccpStatus === "CCP" || h.ccpStatus === "PRW"))
   );
   if (!anyCcps) {
-    children.push(new Paragraph({ text: "No critical control points or process preventive controls have been designated yet." }));
+    children.push(new Paragraph({ text: "尚未指定任何关键控制点或工艺预防控制。" }));
   } else {
     for (const product of products) {
       const ccpHazards = product.processSteps.flatMap((s) =>
@@ -403,46 +403,46 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
       children.push(new Paragraph({ text: product.name, heading: HeadingLevel.HEADING_2 }));
       for (const h of ccpHazards) {
         children.push(new Paragraph({ text: h.description, heading: HeadingLevel.HEADING_3 }));
-        children.push(new Paragraph({ text: `Status: ${h.ccpStatus}` }));
-        children.push(new Paragraph({ text: `Critical limit (Principle 3): ${h.criticalLimit ?? "—"}` }));
-        children.push(new Paragraph({ text: `Monitoring procedure (Principle 4): ${h.monitoringProcedure ?? "—"}` }));
-        children.push(new Paragraph({ text: `Monitoring frequency: ${h.monitoringFrequency ?? "—"}` }));
-        children.push(new Paragraph({ text: `Corrective action (Principle 5): ${h.correctionAction ?? "—"}` }));
-        children.push(new Paragraph({ text: `Verification procedure (Principle 6): ${h.verificationProcedure ?? "—"}` }));
-        children.push(new Paragraph({ text: `Recordkeeping (Principle 7): ${h.recordkeepingProcedure ?? "—"}` }));
-        children.push(new Paragraph({ text: `Responsible party: ${h.responsibleParty ?? "—"}` }));
+        children.push(new Paragraph({ text: `状态：${h.ccpStatus}` }));
+        children.push(new Paragraph({ text: `关键限值（原则 3）：${h.criticalLimit ?? "—"}` }));
+        children.push(new Paragraph({ text: `监控程序（原则 4）：${h.monitoringProcedure ?? "—"}` }));
+        children.push(new Paragraph({ text: `监控频率：${h.monitoringFrequency ?? "—"}` }));
+        children.push(new Paragraph({ text: `纠正措施（原则 5）：${h.correctionAction ?? "—"}` }));
+        children.push(new Paragraph({ text: `验证程序（原则 6）：${h.verificationProcedure ?? "—"}` }));
+        children.push(new Paragraph({ text: `记录保存（原则 7）：${h.recordkeepingProcedure ?? "—"}` }));
+        children.push(new Paragraph({ text: `责任人：${h.responsibleParty ?? "—"}` }));
         children.push(new Paragraph({ text: "" }));
       }
     }
   }
 
   // --- 9. Recall Plan --------------------------------------------------------
-  children.push(sectionHeading("9. Recall Plan"));
+  children.push(sectionHeading("9. 召回计划"));
 
-  children.push(new Paragraph({ text: "Recall Team", heading: HeadingLevel.HEADING_2 }));
+  children.push(new Paragraph({ text: "召回团队", heading: HeadingLevel.HEADING_2 }));
   if (plan.recallContacts.length === 0) {
-    children.push(new Paragraph({ text: "No recall team members have been assigned yet." }));
+    children.push(new Paragraph({ text: "尚未指定召回团队成员。" }));
   } else {
     const contactWidths = pctToDxa([25, 25, 20, 30]);
     const rows = [
-      headerRow(["Role", "Name", "Phone", "Email"], contactWidths),
+      headerRow(["角色", "姓名", "电话", "邮箱"], contactWidths),
       ...plan.recallContacts.map((c) => dataRow([c.role, c.name, c.phone ?? "—", c.email ?? "—"], contactWidths)),
     ];
     children.push(makeTable(contactWidths, rows));
   }
   children.push(new Paragraph({ text: "" }));
 
-  children.push(new Paragraph({ text: "Mock Recall Log (Annual)", heading: HeadingLevel.HEADING_2 }));
+  children.push(new Paragraph({ text: "模拟召回记录（年度）", heading: HeadingLevel.HEADING_2 }));
   if (plan.mockRecallRecords.length === 0) {
     children.push(
       new Paragraph({
-        text: "No mock recall is on file yet. Both FDA/USDA FSIS and CFIA expect one to be performed and documented at least annually.",
+        text: "尚无模拟召回记录。FDA/USDA FSIS 和 CFIA 都期望每年至少进行一次并记录模拟召回。",
       })
     );
   } else {
     const mockWidths = pctToDxa([15, 20, 15, 50]);
     const rows = [
-      headerRow(["Date", "Performed by", "% traced", "Results summary"], mockWidths),
+      headerRow(["日期", "执行人", "追溯率 %", "结果摘要"], mockWidths),
       ...[...plan.mockRecallRecords]
         .sort((a, b) => b.performedAt.getTime() - a.performedAt.getTime())
         .map((r) =>
@@ -463,10 +463,10 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   }
 
   // --- 10. Food Safety SOPs --------------------------------------------------
-  children.push(sectionHeading("10. Food Safety SOPs"));
+  children.push(sectionHeading("10. 食品安全 SOP"));
   const foodSafetySops = plan.sops.filter((s) => getTemplate(s.templateKey)?.category === "food_safety");
   if (foodSafetySops.length === 0) {
-    children.push(new Paragraph({ text: "No additional food safety SOPs have been generated yet." }));
+    children.push(new Paragraph({ text: "尚未生成其他食品安全 SOP。" }));
   } else {
     for (const sop of foodSafetySops) {
       children.push(...markdownToBlocks(sop.content, 1));
@@ -478,7 +478,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
     new Paragraph({ text: "" }),
     new Paragraph({
       text:
-        "This document was drafted with the assistance of HACCP-Builder and should be reviewed and signed off by the individual(s) responsible for food safety at your facility — and, where applicable, a qualified HACCP consultant — before use.",
+        "本文件由 HACCP 计划生成器协助起草，使用前应经贵企业负责食品安全的人员（如适用，还应包括合格的 HACCP 顾问）审阅并签字确认。",
     })
   );
 
@@ -493,9 +493,9 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 children: [
-                  new TextRun("Page "),
+                  new TextRun("第 "),
                   new TextRun({ children: [PageNumber.CURRENT] }),
-                  new TextRun(" of "),
+                  new TextRun(" 页，共 "),
                   new TextRun({ children: [PageNumber.TOTAL_PAGES] }),
                 ],
               }),

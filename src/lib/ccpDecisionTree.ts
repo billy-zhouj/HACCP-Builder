@@ -48,93 +48,93 @@ export interface QuestionGuidance {
 
 export const QUESTION_TEXT: Record<keyof DecisionTreeAnswers, QuestionGuidance> = {
   q1DoControlMeasuresExist: {
-    short: "Do control measures exist for this hazard — at this step, or anywhere later in the process?",
-    plain: "Is there anything, anywhere in your process, capable of controlling this hazard?",
-    help: "Look at this step and every step after it — not just this one.",
+    short: "该危害是否存在控制措施——在本步骤，或流程中任何后续步骤？",
+    plain: "在你的流程中，是否有任何能够控制该危害的措施？",
+    help: "要同时查看本步骤及其后的所有步骤——不只是当前这一步。",
     howToDecide:
-      "A control measure is any action or activity that can prevent the hazard, eliminate it, or reduce it to an acceptable level. That includes process steps (a cook, a metal detector, a sifter, a filter) and preventive controls that live in your prerequisite programs (sanitation, allergen changeover, supplier guarantees). If any of those apply to this hazard, the answer is Yes.",
+      "控制措施是任何能够预防、消除或将危害降至可接受水平的行动或活动。包括工艺步骤（加热、金属检测、筛分、过滤）以及存在于前提方案中的预防控制措施（卫生、过敏原转产、供应商保证）。只要其中任何一项适用于该危害，答案即为「是」。",
     yesExample:
-      "Yes — Salmonella could be present on incoming raw poultry, and a later cook step validated to reach 74°C would destroy it.",
+      "是——沙门氏菌可能存在于来料生禽肉中，后续经验证的加热步骤达到 74°C 即可将其杀灭。",
     noExample:
-      "No — glass fragments could enter at this step, and nothing anywhere downstream (no inspection, filtration, or detection) would remove them.",
+      "否——玻璃碎片可能在本步骤进入，且下游没有任何措施（无检验、过滤或检测）能够将其去除。",
     watchOut:
-      "If you answer No, don't just move on. Ask the follow-up both Codex and FDA/CFIA guidance expect: is control at this step necessary for food safety? If it is, you have a significant hazard with no control — you must modify the step, the process, or the product to introduce one. That's a process redesign, not simply a 'not a CCP' result.",
+      "如果回答「否」，不要就此放过。Codex 与 FDA/CFIA 指南都要求追问：在本步骤进行控制对食品安全是否必要？如果是，那么这就是一个无控制的重大危害——你必须修改步骤、工艺或产品以引入控制措施。这是工艺重新设计，而非简单的一个「不是 CCP」结果。",
     consequence:
-      "Yes → continue to Q2.  No → not a CCP as-is, and you likely need to change the process to control this hazard.",
+      "「是」→ 继续 Q2。「否」→ 当前不是 CCP，且你可能需要改变工艺来控制该危害。",
   },
   q2IsStepSpecificallyToControl: {
-    short: "Is this step specifically designed to eliminate the hazard, or reduce it to an acceptable level?",
-    plain: "Was this step put into the process on purpose to deal with this specific hazard?",
-    help: "Applies to processing steps only — for incoming materials, treat as not applicable (answer No) and continue to Q3.",
+    short: "本步骤是否专门设计用于消除该危害，或将其降至可接受水平？",
+    plain: "该步骤是否被有意放入流程，专门用于处理这一特定危害？",
+    help: "仅适用于加工步骤——对于来料/收货，视为不适用（回答「否」）并继续至 Q3。",
     howToDecide:
-      "'Specifically designed' means the step exists — at least partly — to control this hazard, and you can set a measurable limit for it. Cooking, pasteurizing, metal detection, sifting, and acidification usually qualify. Mixing, receiving, storage, and packaging usually do not, even though a hazard may be present at those steps.",
+      "「专门设计」意味着该步骤的存在——至少部分地——是为了控制该危害，并且你可以为其设定一个可测量的限值。加热、巴氏杀菌、金属检测、筛分和酸化通常符合。混合、接收、储存和包装通常不符合，即使这些步骤可能也存在危害。",
     yesExample:
-      "Yes — a pasteurizer designed to hold product at 72°C for 15 seconds specifically to destroy vegetative pathogens.",
+      "是——巴氏杀菌器专门设计为将产品在 72°C 保持 15 秒，以杀灭营养型病原体。",
     noExample:
-      "No — a mixing step where pathogens may be present, but nothing about mixing is intended to reduce them.",
+      "否——混合步骤中可能存在的病原体，但混合本身并无意降低它们。",
     watchOut:
-      "Two things trip people up here. (1) This question applies to PROCESSING steps only — for incoming materials/receiving, it is 'not applicable', so answer No and continue to Q3. (2) If an SOP or prerequisite program is what actually reduces the hazard, the answer is No. The question asks whether the PROCESSING STEP ITSELF is designed to control the hazard — not whether some procedure applied around that step controls it. Also note that answering Yes ends the tree immediately at CCP, so only answer Yes if this is genuinely the best step at which to control the hazard.",
-    consequence: "Yes → this step is a CCP (tree ends).  No → continue to Q3.",
+      "有两处最容易出错。(1) 此问题仅适用于加工步骤——对于来料/收货，视为「不适用」，回答「否」并继续 Q3。(2) 如果实际降低危害的是某个 SOP 或前提方案，答案也是「否」。此问题问的是加工步骤本身是否设计用于控制危害——而非围绕该步骤的某个程序是否控制了它。还要注意，回答「是」会立即终止判定树并得出 CCP 结论，因此只有在这是控制该危害真正最合适的步骤时才回答「是」。",
+    consequence: "「是」→ 本步骤是 CCP（判定树结束）。「否」→ 继续 Q3。",
   },
   q3CouldContaminationExceedLimit: {
-    short: "Could contamination with this hazard occur at, or increase to, an unacceptable level at this step?",
-    plain: "If your controls here failed, could this hazard reach a dangerous level at this step?",
-    help: "Answer this assuming the control measure fails — that's the point of the question.",
+    short: "污染是否可能在本步骤发生，或增加到不可接受的水平？",
+    plain: "如果此处的控制失效，该危害是否会在此步骤达到危险水平？",
+    help: "假设控制措施失效的情况下回答——这正是该问题的意义所在。",
     howToDecide:
-      "This asks about contamination that exists, occurs, or increases at this step IF THE CONTROL MEASURE WERE TO FAIL. Base your answer on the product, the process, your facility's history (complaints, recalls, deviations, environmental results) and industry data — not on the assumption that everything works as intended.",
+      "此问题询问的是，如果控制措施失效，本步骤是否存在、发生或增加污染。请基于产品、工艺、企业历史（投诉、召回、偏差、环境监测结果）和行业数据作答——而不是基于一切正常运转的假设。",
     yesExample:
-      "Yes — during cooling, if the cooling rate slipped, C. perfringens spores could germinate and multiply past a safe level.",
+      "是——冷却过程中如果冷却速率下滑，产气荚膜梭菌芽孢可能萌发并繁殖超过安全水平。",
     noExample:
-      "No — product is already sealed and held frozen at this step; there is no realistic route for contamination to enter or for the hazard to grow.",
+      "否——产品在此步骤已密封并冷冻保存；没有实际的途径让污染进入或让危害生长。",
     watchOut:
-      "Don't answer No just because your controls normally work — the question presumes they didn't. The standard rule of thumb applies here: if you're in doubt about how to answer, assume the worst case until you have evidence that says otherwise. When unsure, answer Yes and let Q4 resolve it.",
-    consequence: "Yes → continue to Q4.  No → not a CCP at this step.",
+      "不要仅仅因为你的控制措施通常有效就回答「否」——该问题假设它们失效了。这里适用常规经验法则：如果你不确定如何回答，在获得相反证据之前假设最坏情况。不确定时回答「是」，让 Q4 去解决。",
+    consequence: "「是」→ 继续 Q4。「否」→ 本步骤不是 CCP。",
   },
   q4WillLaterStepEliminate: {
-    short: "Will a later step eliminate this hazard, or reduce it to an acceptable level?",
-    plain: "Does something downstream actually fix this problem?",
-    help: "Only count a later step you could genuinely validate and monitor.",
+    short: "后续步骤是否会消除该危害，或将其降至可接受水平？",
+    plain: "下游是否有某一步骤能真正解决这个问题？",
+    help: "只考虑你确实能够验证和监测的后续步骤。",
     howToDecide:
-      "Look forward through the remaining steps for a real kill step or reduction step for this specific hazard — one with a critical limit you could validate, monitor, and record. A vague 'it probably gets handled later' does not count.",
+      "向前查看剩余步骤，寻找针对该特定危害的真正的杀灭或降低步骤——一个你能验证、监测并记录关键限值的步骤。模糊的「后面大概会处理」不算数。",
     yesExample:
-      "Yes — pathogens may be present at the forming step, but a later validated cook step destroys them.",
+      "是——成型步骤可能存在病原体，但后续经验证的加热步骤可将其杀灭。",
     noExample:
-      "No — this is the final metal-detection point before packaging; nothing after it would remove a metal fragment.",
+      "否——这是包装前的最后一道金属检测点；其后没有任何措施能去除金属碎片。",
     watchOut:
-      "If you answer Yes, this step is not the CCP — but you are now relying on that later step. Make sure it is actually evaluated through this tree and designated as a CCP with its own critical limit. The most common failure here is a hazard that quietly disappears because every step points to the next one.",
-    consequence: "Yes → not a CCP at this step (the later step should be).  No → this step is a CCP.",
+      "如果回答「是」，本步骤不是 CCP——但你现在依赖的是那个后续步骤。务必确保该步骤也通过本判定树评估，并被指定为带有自身关键限值的 CCP。最常见的失败是危害悄悄消失，因为每一步都指向下一步。",
+    consequence: "「是」→ 本步骤不是 CCP（该后续步骤才是）。「否」→ 本步骤是 CCP。",
   },
 };
 
-/** Cross-cutting principles worth reading before working through the tree. */
+/** 使用判定树前值得通读的通用原则。 */
 export const DECISION_TREE_PRINCIPLES: { title: string; body: string }[] = [
   {
-    title: "Work one hazard, at one step, at a time",
-    body: "The tree is applied separately to every significant hazard at every process step. The same hazard can be a CCP at one step and not at another — that's expected, not a contradiction.",
+    title: "一次只处理一个步骤的一个危害",
+    body: "判定树分别应用于每个工艺步骤上的每一个重大危害。同一危害在一个步骤是 CCP、在另一个步骤不是——这是正常现象，而非矛盾。",
   },
   {
-    title: "When in doubt, assume the worst",
-    body: "If you can't decide how to answer a question, assume the worst-case situation until you have evidence that says otherwise. It's safer to carry a hazard further down the tree than to dismiss it early.",
+    title: "拿不准时，假设最坏情况",
+    body: "如果无法决定如何回答某个问题，在获得相反证据之前假设最坏情况。把危害继续沿判定树向后传导，比过早地将其排除更安全。",
   },
   {
-    title: "Not everything should be a CCP",
-    body: "Hazards adequately controlled by prerequisite programs (GMPs, sanitation, personal hygiene, pest control, allergen segregation, supplier guarantees) are controlled there, not as CCPs. Designating unnecessary CCPs dilutes attention from the points that genuinely keep food safe.",
+    title: "并非所有步骤都应是 CCP",
+    body: "由前提方案（GMP、卫生、个人卫生、虫害控制、过敏原隔离、供应商保证）充分控制的危害，在那里得到控制，而不是作为 CCP。指定不必要的 CCP 会分散对真正保障食品安全的要点的关注。",
   },
   {
-    title: "An SOP controlling the hazard does not make the step 'designed to control it'",
-    body: "This is the most common Q2 mistake. If a hazard at a step is reduced by an SOP or prerequisite program, the processing step itself was not designed to control that hazard — the SOP is doing the work. Answer No to Q2 and record the controlling SOP instead of designating a CCP.",
+    title: "控制该危害的 SOP 并不使该步骤「设计用于控制它」",
+    body: "这是 Q2 最常见的错误。如果某步骤的危害是由 SOP 或前提方案降低的，那么加工步骤本身并非设计用于控制该危害——是 SOP 在起作用。对 Q2 回答「否」，并记录相应的控制 SOP，而不是指定 CCP。",
   },
   {
-    title: "A CCP needs a measurable critical limit",
-    body: "If you can't set a limit you could measure and monitor in real time (a temperature, a time, a pH, a concentration, a mesh size), the step probably isn't a true CCP.",
+    title: "CCP 需要可测量的关键限值",
+    body: "如果你无法设定一个可实时测量和监测的限值（温度、时间、pH、浓度、网目尺寸），该步骤很可能不是真正的 CCP。",
   },
   {
-    title: "No control measure at all is a red flag",
-    body: "If a significant hazard has no control anywhere in your process, the answer isn't 'not a CCP' — it's that the product or process must change so the hazard can be controlled.",
+    title: "完全没有控制措施是危险信号",
+    body: "如果某个重大危害在你的流程中任何地方都没有控制，答案不是「不是 CCP」——而是产品或工艺必须改变，以便该危害能够得到控制。",
   },
   {
-    title: "Write down your reasoning",
-    body: "Keep the justification for each answer. Both FDA and CFIA inspectors verify that your decisions are supported, and a year from now you won't remember why you answered the way you did.",
+    title: "写下你的推理",
+    body: "保留每个答案的理由。FDA 和 CFIA 检查员都会核实你的决策有依据支撑，而一年之后你也不会记得当初为什么这样回答。",
   },
 ];
 
@@ -155,7 +155,7 @@ export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResu
       status: "NOT_A_CCP",
       reasonKey: "no-control-measure",
       reason:
-        "No control measure exists for this hazard at this or any later step. This is not a CCP as-is — but if control at this step is necessary for food safety, you must change the process, product formulation, or intended use so the hazard can be controlled somewhere in the plan.",
+        "该危害在本步骤或任何后续步骤都不存在控制措施。按现状它不是 CCP——但如果在本步骤进行控制对食品安全是必要的，你必须改变工艺、产品配方或预期用途，使该危害能在计划的某个环节得到控制。",
       nextQuestion: null,
     };
   }
@@ -169,7 +169,7 @@ export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResu
       status: "CCP",
       reasonKey: "step-designed-to-control",
       reason:
-        "This step is specifically designed to eliminate the hazard or reduce it to an acceptable level, so it is a Critical Control Point (CCP). Define a critical limit and monitoring procedure for it on the next step.",
+        "本步骤专门设计用于消除该危害或将其降至可接受水平，因此它是一个关键控制点（CCP）。请在下一步为其定义关键限值和监测程序。",
       nextQuestion: null,
     };
   }
@@ -183,7 +183,7 @@ export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResu
       status: "NOT_A_CCP",
       reasonKey: "no-realistic-contamination-risk",
       reason:
-        "Contamination with this hazard is not reasonably likely to occur or increase to an unacceptable level at this step, so it is not a CCP at this step. Make sure your justification records why — an inspector will ask.",
+        "该危害在本步骤不太可能发生污染，或污染不太可能增加到不可接受的水平，因此它不是本步骤的 CCP。请确保你的判定依据记录下原因——检查员会询问。",
       nextQuestion: null,
     };
   }
@@ -197,7 +197,7 @@ export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResu
       status: "NOT_A_CCP",
       reasonKey: "later-step-controls",
       reason:
-        "A later step will eliminate this hazard or reduce it to an acceptable level, so this step is not the CCP. Important: make sure that later step is itself evaluated through this tree and designated as a CCP — otherwise the hazard ends up controlled nowhere.",
+        "后续步骤将消除该危害或将其降至可接受水平，因此本步骤不是 CCP。重要提示：请确保该后续步骤本身也通过本判定树评估并被指定为 CCP——否则该危害最终将无处受控。",
       nextQuestion: null,
     };
   }
@@ -206,7 +206,7 @@ export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResu
     status: "CCP",
     reasonKey: "no-later-control-required-now",
     reason:
-      "Contamination could reach an unacceptable level here and no later step will control it, so this step is a Critical Control Point (CCP). Define a critical limit and monitoring procedure for it on the next step.",
+      "污染可能在此处达到不可接受的水平，且没有后续步骤能够控制它，因此本步骤是一个关键控制点（CCP）。请在下一步为其定义关键限值和监测程序。",
     nextQuestion: null,
   };
 }
@@ -218,12 +218,12 @@ export const QUESTION_ORDER: (keyof DecisionTreeAnswers)[] = [
   "q4WillLaterStepEliminate",
 ];
 
-/** Renders the answered path so far as e.g. "Q1 Yes → Q2 No → Q3 Yes". */
+/** 渲染已作答的路径，例如「Q1 是 → Q2 否 → Q3 是」。 */
 export function describeAnswerPath(answers: DecisionTreeAnswers): string {
   return QUESTION_ORDER.map((q, i) => {
     const v = answers[q];
     if (v === null) return null;
-    return `Q${i + 1} ${v ? "Yes" : "No"}`;
+    return `Q${i + 1} ${v ? "是" : "否"}`;
   })
     .filter(Boolean)
     .join("  →  ");

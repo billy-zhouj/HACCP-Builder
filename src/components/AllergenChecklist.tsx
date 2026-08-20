@@ -33,7 +33,7 @@ export default function AllergenChecklist({
   return (
     <div className="rounded-md border border-slate-200 bg-slate-50 p-3">
       <p className="mb-2 text-xs font-semibold text-slate-600">
-        Priority allergen checklist (click to add/remove — free text field, so you can add anything not listed)
+        主要过敏原清单（点击添加/移除——这是自由文本字段，未列出的内容也可手动输入）
       </p>
       <div className="flex flex-wrap gap-1.5">
         {ALLERGEN_CHECKLIST.map((a) => (

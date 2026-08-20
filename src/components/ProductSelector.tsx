@@ -17,8 +17,7 @@ export default function ProductSelector({
   if (products.length === 0) {
     return (
       <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-        Add a product on the Products step first — process flow, formulation, and hazard analysis
-        are all tracked per product.
+        请先在「产品」步骤添加产品——工艺流程、配方和危害分析都按产品分别记录。
       </p>
     );
   }

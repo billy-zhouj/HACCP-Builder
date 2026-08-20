@@ -4,9 +4,9 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const plan = await getOwnedPlan(params.id, user.id);
-  if (!plan) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!plan) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const record = await db.mockRecallRecord.create({

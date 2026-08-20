@@ -17,7 +17,7 @@ export default function DecisionTreeGuide({ nextQuestion }: { nextQuestion: keyo
         onClick={() => setShowPrinciples((s) => !s)}
         className="mb-2 text-xs font-semibold text-brand-700 hover:underline"
       >
-        {showPrinciples ? "Hide" : "Show"} decision-tree principles
+        {showPrinciples ? "隐藏" : "显示"}判定树使用原则
       </button>
       {showPrinciples && (
         <ul className="mb-3 space-y-2 border-b border-slate-100 pb-3">
@@ -35,26 +35,26 @@ export default function DecisionTreeGuide({ nextQuestion }: { nextQuestion: keyo
           <p className="mt-1 text-slate-600">{QUESTION_TEXT[nextQuestion].plain}</p>
           <p className="mt-1 text-xs text-slate-500">{QUESTION_TEXT[nextQuestion].help}</p>
           <details className="mt-2">
-            <summary className="cursor-pointer text-xs font-medium text-brand-700">More guidance</summary>
+            <summary className="cursor-pointer text-xs font-medium text-brand-700">更多指导</summary>
             <div className="mt-2 space-y-1 text-xs text-slate-600">
               <p>
-                <span className="font-semibold">How to decide: </span>
+                <span className="font-semibold">如何判断：</span>
                 {QUESTION_TEXT[nextQuestion].howToDecide}
               </p>
               <p>
-                <span className="font-semibold">Yes example: </span>
+                <span className="font-semibold">「是」示例：</span>
                 {QUESTION_TEXT[nextQuestion].yesExample}
               </p>
               <p>
-                <span className="font-semibold">No example: </span>
+                <span className="font-semibold">「否」示例：</span>
                 {QUESTION_TEXT[nextQuestion].noExample}
               </p>
               <p>
-                <span className="font-semibold">Watch out: </span>
+                <span className="font-semibold">注意：</span>
                 {QUESTION_TEXT[nextQuestion].watchOut}
               </p>
               <p>
-                <span className="font-semibold">Consequence: </span>
+                <span className="font-semibold">后果：</span>
                 {QUESTION_TEXT[nextQuestion].consequence}
               </p>
             </div>

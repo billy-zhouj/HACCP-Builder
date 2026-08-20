@@ -22,9 +22,9 @@ export async function PATCH(
   { params }: { params: { id: string; productId: string; ingredientId: string } }
 ) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedIngredient(params.id, params.productId, params.ingredientId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
@@ -45,9 +45,9 @@ export async function DELETE(
   { params }: { params: { id: string; productId: string; ingredientId: string } }
 ) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedIngredient(params.id, params.productId, params.ingredientId, user.id);
-  if (!owned) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   await db.ingredient.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });

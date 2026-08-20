@@ -22,7 +22,7 @@ export default function VendorsPage({ params }: { params: { id: string } }) {
     await fetch(`/api/plans/${params.id}/vendors`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "New vendor" }),
+      body: JSON.stringify({ name: "新供应商" }),
     });
     load();
   }
@@ -41,14 +41,13 @@ export default function VendorsPage({ params }: { params: { id: string } }) {
     load();
   }
 
-  if (loading) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Vendors / Approved Suppliers</h1>
+      <h1 className="text-2xl font-bold text-slate-900">供应商 / 合格供应商</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Facility-wide, shared across all products. Populates the vendor-qualification and
-        supplier-verification SOPs, and can be linked from a product&apos;s Formulation entries.
+        企业级信息，所有产品共用。用于填充供应商资质和供应商验证 SOP，并可从产品的配方条目中关联。
       </p>
 
       <div className="mt-4 space-y-4">
@@ -58,37 +57,37 @@ export default function VendorsPage({ params }: { params: { id: string } }) {
               <input
                 value={v.name}
                 onChange={(e) => updateVendor(v.id, { name: e.target.value })}
-                placeholder="Vendor name"
+                placeholder="供应商名称"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={v.materialsSupplied ?? ""}
                 onChange={(e) => updateVendor(v.id, { materialsSupplied: e.target.value })}
-                placeholder="Materials supplied"
+                placeholder="供应物料"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={v.contactName ?? ""}
                 onChange={(e) => updateVendor(v.id, { contactName: e.target.value })}
-                placeholder="Contact name"
+                placeholder="联系人姓名"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={v.phone ?? ""}
                 onChange={(e) => updateVendor(v.id, { phone: e.target.value })}
-                placeholder="Phone"
+                placeholder="电话"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={v.email ?? ""}
                 onChange={(e) => updateVendor(v.id, { email: e.target.value })}
-                placeholder="Email"
+                placeholder="邮箱"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 value={v.certification ?? ""}
                 onChange={(e) => updateVendor(v.id, { certification: e.target.value })}
-                placeholder="Certification (e.g. SQF, BRCGS)"
+                placeholder="认证（如：SQF、BRCGS）"
                 className="rounded-md border border-slate-300 px-3 py-2 text-sm"
               />
               <select
@@ -108,11 +107,11 @@ export default function VendorsPage({ params }: { params: { id: string } }) {
                   checked={v.guaranteeOnFile}
                   onChange={(e) => updateVendor(v.id, { guaranteeOnFile: e.target.checked })}
                 />
-                Letter of guarantee on file
+                已存档保证书
               </label>
             </div>
             <button onClick={() => removeVendor(v.id)} className="mt-3 text-xs font-medium text-red-600 hover:underline">
-              Remove
+              删除
             </button>
           </div>
         ))}
@@ -120,7 +119,7 @@ export default function VendorsPage({ params }: { params: { id: string } }) {
           onClick={addVendor}
           className="rounded-md border border-brand-200 bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100"
         >
-          + Add vendor
+          + 添加供应商
         </button>
       </div>
     </div>

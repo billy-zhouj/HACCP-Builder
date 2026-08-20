@@ -14,7 +14,7 @@ export default function NewPlanPage() {
     const res = await fetch("/api/plans", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name || "Untitled HACCP Plan" }),
+      body: JSON.stringify({ name: name || "未命名 HACCP 计划" }),
     });
     const plan = await res.json();
     setLoading(false);
@@ -23,14 +23,14 @@ export default function NewPlanPage() {
 
   return (
     <main className="mx-auto max-w-sm px-6 py-16">
-      <h1 className="text-2xl font-bold text-slate-900">New HACCP plan</h1>
+      <h1 className="text-2xl font-bold text-slate-900">新建 HACCP 计划</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700">Plan name</label>
+          <label className="block text-sm font-medium text-slate-700">计划名称</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Acme Foods — Line 1 HACCP Plan"
+            placeholder="例如：示例食品公司——1 号线 HACCP 计划"
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
@@ -39,7 +39,7 @@ export default function NewPlanPage() {
           disabled={loading}
           className="w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
-          {loading ? "Creating…" : "Create plan"}
+          {loading ? "创建中…" : "创建计划"}
         </button>
       </form>
     </main>
