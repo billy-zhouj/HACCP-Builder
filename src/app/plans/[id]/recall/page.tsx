@@ -103,7 +103,7 @@ export default function RecallPage({ params }: { params: { id: string } }) {
 
       {overdue && (
         <GuidancePanel title="模拟召回已逾期或缺失">
-          FDA/USDA FSIS 和 CFIA 都期望每年至少进行一次模拟召回以验证可追溯性。请在下方记录一次。
+          国际良好实践（Codex/NACMCF）期望每年至少进行一次模拟召回以验证可追溯性。请在下方记录一次。
         </GuidancePanel>
       )}
 

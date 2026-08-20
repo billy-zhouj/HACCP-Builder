@@ -6,41 +6,14 @@ export interface FacilityProfile {
   address: string;
   // 本企业生产内容的概述（例如「即食烘焙食品、常温货架期酱料」）。产品级细节按产品记录。
   foodCategories: string;
-  // 本企业适用的美国/加拿大法规范围（可多选，例如同时销往两国的企业）。
-  // "FDA_HARPC": 一般美国食品生产设施——FSMA 危害分析与基于风险的预防性控制规则
-  //   （21 CFR Part 117 Subpart C）。
-  // "FDA_SEAFOOD": 美国海产品 HACCP（21 CFR 123）。
-  // "FDA_JUICE": 美国果汁 HACCP（21 CFR 120）。
-  // "USDA_FSIS": 美国 USDA FSIS 肉类/禽类 HACCP（9 CFR 417）。
-  // "CFIA_SFCR": 加拿大《安全食品法条例》(SFCR) 联邦许可。
-  // "CA_PROVINCIAL": 仅省内销售，由加拿大省/市监管机构而非 CFIA 监管。
-  // "OTHER": 其他司法辖区。
-  regulatoryScopes: string[];
-  // CFIA 许可证号（若适用 SFCR 联邦许可，否则留空）。
-  cfiaLicenseNumber: string;
-  // FDA 企业注册号（若适用，否则留空）。
-  fdaRegistrationNumber: string;
   responsibleIndividual: string;
   responsibleIndividualContact: string;
 }
-
-export const REGULATORY_SCOPE_OPTIONS: { value: string; label: string }[] = [
-  { value: "FDA_HARPC", label: "美国——一般食品生产设施（FSMA HARPC，21 CFR Part 117 Subpart C）" },
-  { value: "FDA_SEAFOOD", label: "美国——海产品 HACCP（21 CFR 123）" },
-  { value: "FDA_JUICE", label: "美国——果汁 HACCP（21 CFR 120）" },
-  { value: "USDA_FSIS", label: "美国——肉类/禽类 HACCP（USDA FSIS，9 CFR 417）" },
-  { value: "CFIA_SFCR", label: "加拿大——《安全食品法条例》(SFCR) 联邦许可" },
-  { value: "CA_PROVINCIAL", label: "加拿大——仅省/市监管（省内销售）" },
-  { value: "OTHER", label: "其他 / 暂不确定" },
-];
 
 export const EMPTY_FACILITY_PROFILE: FacilityProfile = {
   facilityName: "",
   address: "",
   foodCategories: "",
-  regulatoryScopes: ["FDA_HARPC"],
-  cfiaLicenseNumber: "",
-  fdaRegistrationNumber: "",
   responsibleIndividual: "",
   responsibleIndividualContact: "",
 };

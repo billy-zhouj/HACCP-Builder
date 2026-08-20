@@ -54,8 +54,8 @@ export default function GmpPage({ params }: { params: { id: string } }) {
         生成起始文档，然后编辑以匹配您的企业情况，最后定稿。
       </p>
       <RegulatoryNote>
-        美国——21 CFR Part 117 Subpart B（现行良好操作规范，cGMP）。加拿大——CFIA 依据 SFCR
-        的前提方案指南。两套制度期望相同的基础做法。
+        依据《国际食品法典委员会》(Codex Alimentarius) / NACMCF 的 HACCP 结构，
+        实施现行良好操作规范（GMP）与前提方案。
       </RegulatoryNote>
       <TemplateDocsEditor available={AVAILABLE} generated={generated} onGenerate={generate} onSave={save} onDelete={remove} />
     </div>

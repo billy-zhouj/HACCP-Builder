@@ -3,11 +3,12 @@
 import { ALLERGEN_CHECKLIST } from "@/lib/allergenLibrary";
 
 /**
- * UI-suggested allergen checklist covering the union of US and Canadian
- * priority allergen lists (see src/lib/allergenLibrary.ts). Clicking an item
- * appends it to the free-text allergenType field, since the underlying
- * Ingredient.allergenType column stays free text (a facility may need to
- * describe something the checklist doesn't cover, e.g. a specific tree nut).
+ * UI-suggested allergen checklist aligned with the Codex Alimentarius
+ * allergen list and China's GB 7718 labeling standard (see
+ * src/lib/allergenLibrary.ts). Clicking an item appends it to the free-text
+ * allergenType field, since the underlying Ingredient.allergenType column
+ * stays free text (a facility may need to describe something the checklist
+ * doesn't cover, e.g. a specific tree nut).
  */
 export default function AllergenChecklist({
   value,
@@ -49,7 +50,6 @@ export default function AllergenChecklist({
             }`}
           >
             {a.label}
-            {a.jurisdiction === "CA_ONLY" && <span className="ml-1 text-[10px] opacity-70">(CA)</span>}
           </button>
         ))}
       </div>

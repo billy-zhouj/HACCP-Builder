@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import PlanActions from "@/components/PlanActions";
 
 export const metadata = { title: "控制台" };
 
@@ -43,12 +44,15 @@ export default async function DashboardPage() {
                     {p.isPaid ? "已解锁" : "尚未解锁"}
                   </p>
                 </div>
-                <Link
-                  href={`/plans/${p.id}/facility`}
-                  className="rounded-md border border-brand-200 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50"
-                >
-                  打开
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/plans/${p.id}/facility`}
+                    className="rounded-md border border-brand-200 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50"
+                  >
+                    打开
+                  </Link>
+                  <PlanActions planId={p.id} planName={p.name} />
+                </div>
               </div>
             </li>
           ))}

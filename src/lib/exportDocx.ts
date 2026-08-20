@@ -28,7 +28,6 @@ import type {
 } from "@prisma/client";
 import type { FacilityProfile } from "@/types";
 import { getTemplate } from "@/lib/sopTemplates";
-import { REGULATORY_SCOPE_OPTIONS } from "@/types";
 
 type PlanWithRelations = Plan & {
   products: (Product & {
@@ -41,10 +40,6 @@ type PlanWithRelations = Plan & {
   mockRecallRecords: MockRecallRecord[];
   haccpTeamMembers: HaccpTeamMember[];
 };
-
-function regulatoryScopeLabel(value: string): string {
-  return REGULATORY_SCOPE_OPTIONS.find((o) => o.value === value)?.label ?? value;
-}
 
 const CONTENT_WIDTH_DXA = 9360;
 
@@ -178,7 +173,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
       children: [
         new TextRun({
           text:
-            "本计划依据 Codex Alimentarius（国际食品法典）/ NACMCF 的 HACCP 结构编制（5 个预备步骤、7 项原则）。请参阅各章节中的法规依据说明，了解适用于本企业范围的美国（FDA/USDA FSIS）和加拿大（CFIA）具体条款。",
+            "本计划依据 Codex Alimentarius（国际食品法典）/ NACMCF 的 HACCP 结构编制（5 个预备步骤、7 项原则）。",
           italics: true,
         }),
       ],
@@ -195,27 +190,11 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
     new Paragraph({ text: `地址：${facility.address ?? ""}` }),
     new Paragraph({ text: `食品类别：${facility.foodCategories ?? ""}` }),
     new Paragraph({
-      text: `法规范围：${
-        (facility.regulatoryScopes ?? []).map(regulatoryScopeLabel).join("; ") || ""
-      }`,
-    }),
-    new Paragraph({ text: `CFIA 许可证号：${facility.cfiaLicenseNumber ?? ""}` }),
-    new Paragraph({ text: `FDA 注册号：${facility.fdaRegistrationNumber ?? ""}` }),
-    new Paragraph({
       text: `负责人 / HACCP 团队组长：${facility.responsibleIndividual ?? ""} (${
         facility.responsibleIndividualContact ?? ""
       })`,
     }),
-    new Paragraph({ text: "" }),
-    new Paragraph({
-      children: [
-        new TextRun({
-          text:
-            "如本企业加工海产品、果汁或肉类/禽肉产品，除本文件采用的一般 HACCP 结构外，本计划还必须满足该行业的具体法规要求（分别对应 21 CFR 123、21 CFR 120 或 9 CFR 417）。",
-          italics: true,
-        }),
-      ],
-    })
+    new Paragraph({ text: "" })
   );
 
   // --- 2. Preliminary Step 1: HACCP Team -----------------------------------
@@ -436,7 +415,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   if (plan.mockRecallRecords.length === 0) {
     children.push(
       new Paragraph({
-        text: "尚无模拟召回记录。FDA/USDA FSIS 和 CFIA 都期望每年至少进行一次并记录模拟召回。",
+        text: "尚无模拟召回记录。建议每年至少进行一次并记录模拟召回。",
       })
     );
   } else {

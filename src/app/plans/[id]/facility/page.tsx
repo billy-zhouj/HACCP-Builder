@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EMPTY_FACILITY_PROFILE, REGULATORY_SCOPE_OPTIONS, type FacilityProfile } from "@/types";
+import { EMPTY_FACILITY_PROFILE, type FacilityProfile } from "@/types";
 import GuidancePanel from "@/components/GuidancePanel";
 
 export default function FacilityProfilePage({ params }: { params: { id: string } }) {
@@ -23,13 +23,6 @@ export default function FacilityProfilePage({ params }: { params: { id: string }
     setProfile((p) => ({ ...p, [key]: value }));
   }
 
-  function toggleScope(value: string) {
-    setProfile((p) => {
-      const has = p.regulatoryScopes.includes(value);
-      return { ...p, regulatoryScopes: has ? p.regulatoryScopes.filter((v) => v !== value) : [...p.regulatoryScopes, value] };
-    });
-  }
-
   async function save() {
     setSaving(true);
     await fetch(`/api/plans/${params.id}`, {
@@ -43,22 +36,12 @@ export default function FacilityProfilePage({ params }: { params: { id: string }
 
   if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
-  const scopesIncludeSector =
-    profile.regulatoryScopes.includes("FDA_SEAFOOD") ||
-    profile.regulatoryScopes.includes("FDA_JUICE") ||
-    profile.regulatoryScopes.includes("USDA_FSIS");
-
   return (
     <div>
       <h1 className="text-2xl font-bold text-slate-900">企业概况</h1>
-      <p className="mt-1 text-sm text-slate-600">
-        本计划下所有产品共用此信息。请勾选所有适用的法规范围——许多企业同时销往美国和加拿大。
-      </p>
 
       <GuidancePanel title="为何重要">
-        本 HACCP 计划遵循下述所有法规共同的 Codex/NACMCF 结构。如果您加工海产品、果汁或
-        肉类/禽类，您的计划还必须在整个向导使用的通用结构之上，额外满足该行业的具体法规
-        （21 CFR 123、21 CFR 120 或 9 CFR 417）。
+        本计划下所有产品共用此信息。
       </GuidancePanel>
 
       <div className="space-y-4">
@@ -86,48 +69,6 @@ export default function FacilityProfilePage({ params }: { params: { id: string }
             placeholder="例如：即食烘焙食品、常温货架期酱料"
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700">法规范围</label>
-          <div className="mt-2 space-y-2">
-            {REGULATORY_SCOPE_OPTIONS.map((opt) => (
-              <label key={opt.value} className="flex items-start gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={profile.regulatoryScopes.includes(opt.value)}
-                  onChange={() => toggleScope(opt.value)}
-                  className="mt-0.5"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-          {scopesIncludeSector && (
-            <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
-              您选择了拥有专属 HACCP 法规的行业。本向导覆盖该法规所基于的通用 Codex/NACMCF
-              结构——请确认您完成的计划还满足该法规的行业特定要求。
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-slate-700">CFIA 许可证号（如适用）</label>
-            <input
-              value={profile.cfiaLicenseNumber}
-              onChange={(e) => set("cfiaLicenseNumber", e.target.value)}
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700">FDA 注册号（如适用）</label>
-            <input
-              value={profile.fdaRegistrationNumber}
-              onChange={(e) => set("fdaRegistrationNumber", e.target.value)}
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-            />
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

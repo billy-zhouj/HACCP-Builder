@@ -2,15 +2,9 @@
  * CCP decision-tree engine — Principle 2 of the Codex Alimentarius/NACMCF
  * HACCP system.
  *
- * Implements the classic four-question Codex CCP decision tree. This exact
- * structure is mandatory verbatim for FDA seafood HACCP (21 CFR 123), FDA
- * juice HACCP (21 CFR 120), and USDA FSIS meat/poultry HACCP (9 CFR 417),
- * and is the same tree CFIA references in its guidance for Preventive
- * Control Plans under the Safe Food for Canadians Regulations (SFCR). For
- * general manufactured-food facilities under FDA's FSMA Hazard Analysis and
- * Risk-Based Preventive Controls rule (21 CFR Part 117 Subpart C, "HARPC"),
- * this tree is not a regulatory mandate but is a widely accepted way to
- * make the same CCP-vs-other-preventive-control determination consistently.
+ * Implements the classic four-question Codex CCP decision tree, which is the
+ * internationally accepted way to make the CCP-vs-other-preventive-control
+ * determination consistently across all food sectors.
  *
  * This is decision-support, not a substitute for review/sign-off by the
  * individual(s) responsible for food safety at your facility.
@@ -58,7 +52,7 @@ export const QUESTION_TEXT: Record<keyof DecisionTreeAnswers, QuestionGuidance> 
     noExample:
       "否——玻璃碎片可能在本步骤进入，且下游没有任何措施（无检验、过滤或检测）能够将其去除。",
     watchOut:
-      "如果回答「否」，不要就此放过。Codex 与 FDA/CFIA 指南都要求追问：在本步骤进行控制对食品安全是否必要？如果是，那么这就是一个无控制的重大危害——你必须修改步骤、工艺或产品以引入控制措施。这是工艺重新设计，而非简单的一个「不是 CCP」结果。",
+      "如果回答「否」，不要就此放过。Codex 指南要求追问：在本步骤进行控制对食品安全是否必要？如果是，那么这就是一个无控制的重大危害——你必须修改步骤、工艺或产品以引入控制措施。这是工艺重新设计，而非简单的一个「不是 CCP」结果。",
     consequence:
       "「是」→ 继续 Q2。「否」→ 当前不是 CCP，且你可能需要改变工艺来控制该危害。",
   },
@@ -134,7 +128,7 @@ export const DECISION_TREE_PRINCIPLES: { title: string; body: string }[] = [
   },
   {
     title: "写下你的推理",
-    body: "保留每个答案的理由。FDA 和 CFIA 检查员都会核实你的决策有依据支撑，而一年之后你也不会记得当初为什么这样回答。",
+    body: "保留每个答案的理由。审核人员会核实你的决策有依据支撑，而一年之后你也不会记得当初为什么这样回答。",
   },
 ];
 

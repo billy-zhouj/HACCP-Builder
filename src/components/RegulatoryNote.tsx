@@ -1,7 +1,6 @@
 /**
  * Reusable inline citation callout, used across wizard steps to surface the
- * US/Canada regulatory framing without branching app logic per sector — see
- * the README "Regulatory framing" section.
+ * Codex/NACMCF regulatory framing without branching app logic per sector.
  */
 export default function RegulatoryNote({ children }: { children: React.ReactNode }) {
   return (
