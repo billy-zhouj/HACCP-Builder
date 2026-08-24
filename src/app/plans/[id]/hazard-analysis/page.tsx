@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import ProductSelector from "@/components/ProductSelector";
 import GuidancePanel from "@/components/GuidancePanel";
-import { suggestHazardsForStep, suggestAllergenHazardsForStep, type HazardTypeKey } from "@/lib/hazardLibrary";
+import {
+  suggestHazardsForStep,
+  suggestHazardsForReceiving,
+  suggestAllergenHazardsForStep,
+  isReceivingStepName,
+  type HazardTypeKey,
+} from "@/lib/hazardLibrary";
 
 interface Hazard {
   id: string;
@@ -34,6 +40,8 @@ interface Ingredient {
 interface ProductData {
   id: string;
   name: string;
+  foodCategory: string | null;
+  foodSubcategory: string | null;
   processSteps: Step[];
   ingredients: Ingredient[];
 }
@@ -73,10 +81,10 @@ export default function HazardAnalysisPage({ params }: { params: { id: string } 
 
   async function suggestForStep(step: Step) {
     if (!active) return;
-    const suggestions = [
-      ...suggestHazardsForStep(step.name),
-      ...suggestAllergenHazardsForStep(step.name, active.ingredients),
-    ];
+    const baseSuggestions = isReceivingStepName(step.name)
+      ? suggestHazardsForReceiving(active.foodCategory, active.foodSubcategory)
+      : suggestHazardsForStep(step.name);
+    const suggestions = [...baseSuggestions, ...suggestAllergenHazardsForStep(step.name, active.ingredients)];
     for (const s of suggestions) {
       await addHazard(step.id, s.type, s.description);
     }

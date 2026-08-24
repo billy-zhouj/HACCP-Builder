@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedProduct } from "@/lib/session";
 import { db } from "@/lib/db";
-import { suggestHazardsForStep, suggestAllergenHazardsForStep } from "@/lib/hazardLibrary";
+import { suggestHazardsForStep, suggestHazardsForReceiving, suggestAllergenHazardsForStep, isReceivingStepName } from "@/lib/hazardLibrary";
 
 export async function POST(req: Request, { params }: { params: { id: string; productId: string } }) {
   const user = await getCurrentUser();
@@ -22,10 +22,18 @@ export async function POST(req: Request, { params }: { params: { id: string; pro
   // running start on the hazard analysis for this step.
   if (body.seedHazards !== false) {
     const ingredients = await db.ingredient.findMany({ where: { productId: product.id } });
-    const suggestions = [
-      ...suggestHazardsForStep(name),
-      ...suggestAllergenHazardsForStep(name, ingredients),
-    ];
+    // The receiving step uses the product's two-level food category for
+    // more precise suggestions; all other steps use the step-name library.
+    const suggestions =
+      isReceivingStepName(name)
+        ? [
+            ...suggestHazardsForReceiving(product.foodCategory, product.foodSubcategory),
+            ...suggestAllergenHazardsForStep(name, ingredients),
+          ]
+        : [
+            ...suggestHazardsForStep(name),
+            ...suggestAllergenHazardsForStep(name, ingredients),
+          ];
     if (suggestions.length > 0) {
       await db.hazard.createMany({
         data: suggestions.map((s) => ({

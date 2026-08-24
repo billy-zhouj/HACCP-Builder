@@ -43,6 +43,7 @@ model User {
   dataDeletionRequestedAt DateTime? // set when user requests account/data purge
 
   plans    Plan[]
+  orders   Order[]
   sessions SessionToken[]
 }
 
@@ -86,8 +87,47 @@ model Plan {
   recallContacts    RecallContact[]
   mockRecallRecords MockRecallRecord[]
   haccpTeamMembers  HaccpTeamMember[]
+  orders            Order[]
 
   @@index([userId])
+}
+
+// --- Orders (国内支付宝/微信扫码支付) ----------------------------------------
+// 用户提交订单后生成，用于记录支付宝 / 微信扫码支付的解锁订单。支付到账后由
+// 管理员/人工审核（或开发模式旁路）将状态置为 activated，同时把对应计划标记为已解锁。
+model Order {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  // 订单基本信息
+  orderNumber  String   @unique // 人类可读订单号，如 ORD-20260820-A3F2K
+  amountCNY    Int      // 金额（分）
+
+  // 支付信息
+  paymentMethod String // "alipay" | "wechat"
+
+  // 企业开票信息（可选）
+  companyName  String?
+  contactEmail String?
+  taxNumber    String?
+
+  // 订单状态：pending_payment → paid → activated / expired / cancelled
+  status       String   @default("pending_payment")
+  note         String?
+
+  // 时间线
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime // 付款截止时间（默认 7 天后）
+  paidAt       DateTime?
+  activatedAt  DateTime?
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([orderNumber])
 }
 
 // Preliminary Step 1 (Codex/NACMCF): the HACCP team. Distinct from
@@ -152,6 +192,10 @@ model Product {
   plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
 
   name                String
+  // Two-level food category (大类/子类) selected at creation, used to drive
+  // receiving-step hazard suggestions. IDs from src/lib/foodCategories.ts.
+  foodCategory        String?
+  foodSubcategory     String?
   productDescription  String? // composition, processing method, distribution (Prelim Step 2)
   intendedUse         String? // e.g. ready-to-eat, requires cooking (Prelim Step 3)
   intendedConsumer    String? // general public or a vulnerable population (Prelim Step 3)

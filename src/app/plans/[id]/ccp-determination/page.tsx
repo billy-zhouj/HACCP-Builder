@@ -75,6 +75,13 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
     load();
   }
 
+  async function resetStep(stepId: string) {
+    if (!active) return;
+    if (!confirm("将该步骤所有危害恢复为未评定状态？此操作将清除全部四问作答。")) return;
+    await fetch(`/api/plans/${params.id}/products/${active.id}/process-steps/${stepId}/reset-ccp`, { method: "POST" });
+    load();
+  }
+
   if (loading) return <p className="text-sm text-slate-500">加载中…</p>;
 
   return (
@@ -96,8 +103,16 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
           if (hazards.length === 0) return null;
           return (
             <div key={step.id} className="mb-6 rounded-lg border border-slate-200 bg-white p-4">
-              <h2 className="text-sm font-semibold text-slate-800">
-                步骤 {step.order}：{step.name}
+              <h2 className="flex items-center justify-between text-sm font-semibold text-slate-800">
+                <span>
+                  步骤 {step.order}：{step.name}
+                </span>
+                <button
+                  onClick={() => resetStep(step.id)}
+                  className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                >
+                  重新评定
+                </button>
               </h2>
               <div className="mt-3 space-y-4">
                 {hazards.map((h) => {

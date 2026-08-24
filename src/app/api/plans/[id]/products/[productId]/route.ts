@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 
 const STRING_FIELDS = [
   "name",
+  "foodCategory",
+  "foodSubcategory",
   "productDescription",
   "intendedUse",
   "intendedConsumer",
@@ -22,6 +24,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; pr
   for (const f of STRING_FIELDS) {
     if (typeof body[f] === "string") data[f] = body[f];
   }
+  // Explicit null clears a category/subcategory selection.
+  if ("foodCategory" in body && body.foodCategory === null) data.foodCategory = null;
+  if ("foodSubcategory" in body && body.foodSubcategory === null) data.foodSubcategory = null;
 
   const updated = await db.product.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);

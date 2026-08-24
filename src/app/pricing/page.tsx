@@ -14,9 +14,10 @@ export default function PricingPage() {
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">计划解锁</h2>
-          <p className="mt-1 text-3xl font-bold text-slate-900">一次性费用</p>
+          <p className="mt-1 text-3xl font-bold text-slate-900">¥99 / 计划</p>
           <p className="mt-2 text-sm text-slate-600">
-            解锁单个 HACCP 计划的可审计 .docx 导出。解锁前后编辑均免费且不受限制。
+            一次性支付 ¥99，解锁单个 HACCP 计划的格式化 Word 导出。支持
+            <strong>支付宝 / 微信扫码支付</strong>。解锁前后编辑均免费且不受限制。
           </p>
         </div>
         <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -29,7 +30,8 @@ export default function PricingPage() {
       </div>
 
       <p className="mt-10 text-sm text-slate-500">
-        计费通过 Stripe 进行。在某个部署真正配置计费之前，提供开发模式的&ldquo;模拟解锁&rdquo;选项，使整个向导（包括导出）无需真实支付凭据即可端到端测试。
+        支付通过支付宝 / 微信扫码完成（人民币结算）。在真正配置收款账户之前，提供开发模式的
+        &ldquo;模拟解锁&rdquo;选项，使整个向导（包括导出）无需真实支付即可端到端测试。
       </p>
 
       <div className="mt-10">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { PaymentOptions } from "@/components/PaymentOptions";
 
 interface PlanSummary {
   id: string;
@@ -18,7 +19,6 @@ function ReviewExportInner({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
   const [plan, setPlan] = useState<PlanSummary | null>(null);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   async function load() {
@@ -32,39 +32,6 @@ function ReviewExportInner({ params }: { params: { id: string } }) {
     if (searchParams.get("unlocked")) setMessage("计划已解锁！您现在可以在下方导出。");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
-
-  async function devUnlock() {
-    setBusy(true);
-    const res = await fetch("/api/billing/checkout-dev-unlock", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planId: params.id }),
-    });
-    setBusy(false);
-    if (res.ok) {
-      setMessage("计划已解锁（开发模式）。");
-      load();
-    } else {
-      const body = await res.json().catch(() => ({}));
-      setMessage(body.error || "开发模式解锁失败。");
-    }
-  }
-
-  async function realCheckout() {
-    setBusy(true);
-    const res = await fetch("/api/billing/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "plan_unlock", planId: params.id }),
-    });
-    const body = await res.json().catch(() => ({}));
-    setBusy(false);
-    if (body.url) {
-      window.location.href = body.url;
-    } else {
-      setMessage(body.error || "结账不可用。");
-    }
-  }
 
   if (loading || !plan) return <p className="text-sm text-slate-500">加载中…</p>;
 
@@ -115,27 +82,7 @@ function ReviewExportInner({ params }: { params: { id: string } }) {
             </a>
           </>
         ) : (
-          <>
-            <p className="text-sm text-slate-700">
-              一次性付费解锁此计划，即可启用格式化 Word 导出。
-            </p>
-            <div className="mt-3 flex gap-3">
-              <button
-                onClick={realCheckout}
-                disabled={busy}
-                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
-              >
-                通过 Stripe 解锁
-              </button>
-              <button
-                onClick={devUnlock}
-                disabled={busy}
-                className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
-              >
-                （开发模式）模拟解锁
-              </button>
-            </div>
-          </>
+          <PaymentOptions planId={params.id} planName={plan.name} onSuccess={() => load()} />
         )}
       </div>
     </div>
