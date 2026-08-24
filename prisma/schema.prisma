@@ -381,3 +381,17 @@ model PlanExport {
 
   @@index([planId])
 }
+
+// Processed Stripe webhook events, used for idempotent fulfillment.
+// Stripe retries webhooks on non-2xx responses; without deduplication,
+// a retried checkout.session.completed event would double-fulfill an order
+// (re-setting paidAt, re-computing retentionExpiresAt with a newer timestamp).
+// The unique constraint on stripeEventId ensures only the first processing
+// of a given event succeeds; subsequent retries hit a constraint violation
+// and are treated as already-processed.
+model WebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  eventType     String
+  createdAt     DateTime @default(now())
+}

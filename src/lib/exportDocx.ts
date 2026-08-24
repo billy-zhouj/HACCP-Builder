@@ -32,6 +32,7 @@ import type {
 import type { FacilityProfile } from "@/types";
 import { getTemplate } from "@/lib/sopTemplates";
 import { evaluateDecisionTree } from "@/lib/ccpDecisionTree";
+import { parseFacilityProfilePartial } from "@/lib/safeJsonParse";
 
 type PlanWithRelations = Plan & {
   products: (Product & {
@@ -61,7 +62,18 @@ function cell(text: string, opts: { bold?: boolean; widthDxa?: number } = {}) {
 function headerRow(labels: string[], widthsDxa: number[]) {
   return new TableRow({
     tableHeader: true,
-    children: labels.map((l, i) => cell(l, { bold: true, widthDxa: widthsDxa[i] })),
+    children: labels.map((l, i) =>
+      new TableCell({
+        width: { size: widthsDxa[i], type: WidthType.DXA },
+        shading: { fill: "F2F2F2" },
+        children: [
+          new Paragraph({
+            children: [new TextRun({ text: l, bold: true, size: 24 })],
+            alignment: AlignmentType.CENTER,
+          }),
+        ],
+      })
+    ),
   });
 }
 
@@ -75,6 +87,14 @@ function makeTable(widthsDxa: number[], rows: TableRow[]): Table {
     columnWidths: widthsDxa,
     layout: TableLayoutType.FIXED,
     width: { size: widthsDxa.reduce((a, b) => a + b, 0), type: WidthType.DXA },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+      left: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+      right: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: "EEEEEE" },
+      insideVertical: { style: BorderStyle.SINGLE, size: 2, color: "EEEEEE" },
+    },
   });
 }
 
@@ -92,7 +112,16 @@ function headingForLevel(level: number) {
 }
 
 function sectionHeading(text: string): Paragraph {
-  return new Paragraph({ text, heading: HeadingLevel.HEADING_1, pageBreakBefore: true });
+  return new Paragraph({
+    text,
+    heading: HeadingLevel.HEADING_1,
+    spacing: { before: 300, after: 150 },
+    shading: { fill: "F0F8FF" },
+    border: {
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: "2E5A88" }
+    },
+    pageBreakBefore: true,
+  });
 }
 
 // --- Hazard analysis & CCP determination worksheets -------------------------
@@ -535,10 +564,13 @@ interface MarkdownBlocks {
 const BULLET_REF = "haccp-bullets";
 const orderedRef = (id: number) => `haccp-ordered-${id}`;
 
-// Module-level counter: every ordered list in the exported document gets its
-// own numbering reference, so numbering restarts at each list's start number
-// (uniqueness also holds across multiple markdown sources / concurrent builds).
-let nextOrderedListId = 1;
+// Counter is scoped per buildPlanDocx call (not module-level) to prevent
+// numbering pollution across concurrent/warm-start serverless invocations.
+// Each call to buildPlanDocx creates a fresh { next: 1 } and threads it
+// through parseMarkdown → markdownToBlocks → addMarkdown.
+interface ListCounter {
+  next: number;
+}
 
 const CJK_CHAR = /[\u3000-\u303f\u4e00-\u9fff\u3040-\u30ff\uff00-\uffef]/;
 
@@ -588,7 +620,7 @@ function parseCells(line: string): string[] {
     .map((c) => c.trim());
 }
 
-function parseMarkdown(md: string): {
+function parseMarkdown(md: string, counter: ListCounter): {
   blocks: MdBlock[];
   orderedLists: { id: number; start: number }[];
   usesBullets: boolean;
@@ -665,7 +697,7 @@ function parseMarkdown(md: string): {
         activeOrderedId !== null &&
         (prev?.kind === "ordered" || (prev?.kind === "bullet" && n === lastOrderedNumber + 1));
       if (!continues) {
-        const id = nextOrderedListId++;
+        const id = counter.next++;
         orderedLists.push({ id, start: n });
         activeOrderedId = id;
       }
@@ -703,25 +735,59 @@ function parseMarkdown(md: string): {
   return { blocks, orderedLists, usesBullets };
 }
 
-function renderMdBlocks(blocks: MdBlock[], demote: number): (Paragraph | Table)[] {
-  return blocks.map((b): Paragraph | Table => {
+function renderMdBlocks(
+  blocks: MdBlock[],
+  demote: number,
+  pageBreakBeforeFirst = false
+): (Paragraph | Table)[] {
+  const out: (Paragraph | Table)[] = [];
+  blocks.forEach((b, idx) => {
+    const isFirst = idx === 0 && pageBreakBeforeFirst;
     switch (b.kind) {
       case "heading":
-        return new Paragraph({ children: inlineRuns(b.text), heading: headingForLevel(b.level + demote) });
+        out.push(
+          new Paragraph({
+            children: inlineRuns(b.text),
+            heading: headingForLevel(b.level + demote),
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "para":
-        return new Paragraph({ children: inlineRuns(b.text) });
+        out.push(
+          new Paragraph({
+            children: inlineRuns(b.text),
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "quote":
-        return new Paragraph({ children: inlineRuns(b.text, { italics: true }), indent: { left: 360 } });
+        out.push(
+          new Paragraph({
+            children: inlineRuns(b.text, { italics: true }),
+            indent: { left: 360 },
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "bullet":
-        return new Paragraph({
-          children: inlineRuns(b.text),
-          numbering: { reference: BULLET_REF, level: b.level },
-        });
+        out.push(
+          new Paragraph({
+            children: inlineRuns(b.text),
+            numbering: { reference: BULLET_REF, level: b.level },
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "ordered":
-        return new Paragraph({
-          children: inlineRuns(b.text),
-          numbering: { reference: orderedRef(b.listId), level: b.level },
-        });
+        out.push(
+          new Paragraph({
+            children: inlineRuns(b.text),
+            numbering: { reference: orderedRef(b.listId), level: b.level },
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "table": {
         const ncols = Math.max(b.header.length, ...b.rows.map((r) => r.length), 1);
         const widths = pctToDxa(Array.from({ length: ncols }, () => 100 / ncols));
@@ -733,18 +799,31 @@ function renderMdBlocks(blocks: MdBlock[], demote: number): (Paragraph | Table)[
             return dataRow(cells, widths);
           }),
         ];
-        return makeTable(widths, rows);
+        if (isFirst) {
+          // Tables cannot carry pageBreakBefore; emit a page-break paragraph first.
+          out.push(new Paragraph({ pageBreakBefore: true, children: [new TextRun("")] }));
+        }
+        out.push(makeTable(widths, rows));
+        break;
       }
       case "hr":
-        return new Paragraph({
-          border: { bottom: { style: BorderStyle.SINGLE, size: 6, space: 1, color: "999999" } },
-        });
+        out.push(
+          new Paragraph({
+            border: { bottom: { style: BorderStyle.SINGLE, size: 6, space: 1, color: "999999" } },
+            ...(isFirst ? { pageBreakBefore: true } : {}),
+          })
+        );
+        break;
       case "blank":
-        return new Paragraph({ text: "" });
+        out.push(
+          new Paragraph({ text: "", ...(isFirst ? { pageBreakBefore: true } : {}) })
+        );
+        break;
       default:
-        return new Paragraph({ text: "" });
+        out.push(new Paragraph({ text: "" }));
     }
   });
+  return out;
 }
 
 function mdNumberingConfig(
@@ -796,25 +875,31 @@ function mdNumberingConfig(
   return config;
 }
 
-function markdownToBlocks(md: string, demote = 0): MarkdownBlocks {
-  const parsed = parseMarkdown(md);
+function markdownToBlocks(
+  md: string,
+  demote: number,
+  counter: ListCounter,
+  pageBreakBeforeFirst = false
+): MarkdownBlocks {
+  const parsed = parseMarkdown(md, counter);
   return {
-    blocks: renderMdBlocks(parsed.blocks, demote),
+    blocks: renderMdBlocks(parsed.blocks, demote, pageBreakBeforeFirst),
     numbering: mdNumberingConfig(parsed.orderedLists, parsed.usesBullets),
   };
 }
 
 export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
-  const facility: Partial<FacilityProfile> = plan.facilityProfile ? JSON.parse(plan.facilityProfile) : {};
+  const facility: Partial<FacilityProfile> = parseFacilityProfilePartial(plan.facilityProfile);
   const products = [...plan.products].sort((a, b) => a.order - b.order);
   const team = [...plan.haccpTeamMembers].sort((a, b) => a.order - b.order);
 
   const children: (Paragraph | Table | TableOfContents)[] = [];
   const numbering: MdNumberingConfig[] = [];
   const seenNumberingRefs = new Set<string>();
+  const listCounter: ListCounter = { next: 1 };
 
-  const addMarkdown = (md: string, demote: number) => {
-    const { blocks, numbering: n } = markdownToBlocks(md, demote);
+  const addMarkdown = (md: string, demote: number, opts: { pageBreakBefore?: boolean } = {}) => {
+    const { blocks, numbering: n } = markdownToBlocks(md, demote, listCounter, opts.pageBreakBefore);
     children.push(...blocks);
     for (const item of n) {
       if (!seenNumberingRefs.has(item.reference)) {
@@ -933,10 +1018,11 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   if (gmpSops.length === 0) {
     children.push(new Paragraph({ text: "尚未生成 GMP / 前提方案文档。" }));
   } else {
-    for (const sop of gmpSops) {
-      addMarkdown(sop.content, 1);
+    gmpSops.forEach((sop, i) => {
+      // 第一个 SOP 紧跟在章节标题下方；后续 SOP 各自从新的一页开始。
+      addMarkdown(sop.content, 1, i === 0 ? {} : { pageBreakBefore: true });
       children.push(new Paragraph({ text: "" }));
-    }
+    });
   }
 
   // --- 6. Process Flow & Formulations (Preliminary Steps 4 & 5) -----------
@@ -1099,7 +1185,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
 
   const recallSop = plan.sops.find((s) => s.templateKey === "recall");
   if (recallSop) {
-    addMarkdown(recallSop.content, 1);
+    addMarkdown(recallSop.content, 1, { pageBreakBefore: true });
     children.push(new Paragraph({ text: "" }));
   }
 
@@ -1109,10 +1195,11 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   if (foodSafetySops.length === 0) {
     children.push(new Paragraph({ text: "尚未生成其他食品安全 SOP。" }));
   } else {
-    for (const sop of foodSafetySops) {
-      addMarkdown(sop.content, 1);
+    foodSafetySops.forEach((sop, i) => {
+      // 第一个 SOP 紧跟在章节标题下方；后续 SOP 各自从新的一页开始。
+      addMarkdown(sop.content, 1, i === 0 ? {} : { pageBreakBefore: true });
       children.push(new Paragraph({ text: "" }));
-    }
+    });
   }
 
   children.push(
@@ -1124,7 +1211,7 @@ export async function buildPlanDocx(plan: PlanWithRelations): Promise<Buffer> {
   );
 
   const doc = new Document({
-    features: { updateFields: true },
+     features: { updateFields: true },
     ...(numbering.length > 0 ? { numbering: { config: numbering } } : {}),
     sections: [
       {

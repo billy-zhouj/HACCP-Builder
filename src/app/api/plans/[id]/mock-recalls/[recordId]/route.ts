@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function DELETE(_req: Request, { params }: { params: { id: string; recordId: string } }) {
+export const DELETE = apiHandler(async (_req: Request, { params }: { params: { id: string; recordId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const plan = await getOwnedPlan(params.id, user.id);
@@ -13,4 +14,4 @@ export async function DELETE(_req: Request, { params }: { params: { id: string; 
 
   await db.mockRecallRecord.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

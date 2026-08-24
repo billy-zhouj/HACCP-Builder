@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
 import { STRIPE_ENABLED } from "@/lib/stripe";
+import { apiHandler } from "@/lib/apiHandler";
 
 /**
  * Convenience route that unlocks a plan for export without talking to
@@ -15,7 +16,7 @@ import { STRIPE_ENABLED } from "@/lib/stripe";
  *    development, and allowed on a deployed server only when you explicitly
  *    set ALLOW_FREE_UNLOCK="true".
  */
-export async function POST(req: Request) {
+export const POST = apiHandler(async (req: Request) => {
   const freeUnlockAllowed =
     !STRIPE_ENABLED &&
     (process.env.NODE_ENV !== "production" || process.env.ALLOW_FREE_UNLOCK === "true");
@@ -40,4 +41,4 @@ export async function POST(req: Request) {
   });
 
   return NextResponse.json(updated);
-}
+});

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedProcessStep } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function PATCH(
+export const PATCH = apiHandler(async (
   req: Request,
   { params }: { params: { id: string; productId: string; stepId: string } }
-) {
+) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedProcessStep(params.id, params.productId, params.stepId, user.id);
@@ -19,12 +20,12 @@ export async function PATCH(
 
   const updated = await db.processStep.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);
-}
+});
 
-export async function DELETE(
+export const DELETE = apiHandler(async (
   _req: Request,
   { params }: { params: { id: string; productId: string; stepId: string } }
-) {
+) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedProcessStep(params.id, params.productId, params.stepId, user.id);
@@ -32,4 +33,4 @@ export async function DELETE(
 
   await db.processStep.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
 import { PLAN_UNLOCK_PRICE_CNY, toFen, toYuan } from "@/lib/orderPricing";
+import { apiHandler } from "@/lib/apiHandler";
 
 /**
  * 国内人工订单提交接口（支付宝 / 微信扫码支付）。
@@ -9,7 +10,7 @@ import { PLAN_UNLOCK_PRICE_CNY, toFen, toYuan } from "@/lib/orderPricing";
  * 流程：用户提交 → 生成订单号存库 → 返回付款信息（收款账户/二维码）→
  * 到账后由人工审核（或开发模式旁路）激活 → 解锁该计划的 Word 导出。
  */
-export async function POST(req: Request) {
+export const POST = apiHandler(async (req: Request) => {
   const user = await getCurrentUser();
   if (!user || !user.email) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
@@ -79,13 +80,13 @@ export async function POST(req: Request) {
       "开通后即可在「审核与导出」页下载 Word 文档",
     ],
   });
-}
+});
 
 /**
  * GET /api/orders/manual?orderId=xxx or ?orderNumber=xxx
  * 查询订单状态（仅本人订单）。
  */
-export async function GET(req: Request) {
+export const GET = apiHandler(async (req: Request) => {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "请先登录" }, { status: 401 });
@@ -121,7 +122,7 @@ export async function GET(req: Request) {
     paidAt: order.paidAt?.toISOString() ?? null,
     activatedAt: order.activatedAt?.toISOString() ?? null,
   });
-}
+});
 
 function getPaymentInstructions(method: string, amountFen: number, orderNumber: string) {
   const amountYuan = (amountFen / 100).toFixed(2);

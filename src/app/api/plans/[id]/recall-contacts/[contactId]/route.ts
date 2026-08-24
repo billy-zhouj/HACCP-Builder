@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
 async function getOwnedContact(planId: string, contactId: string, userId: string) {
   const plan = await getOwnedPlan(planId, userId);
@@ -8,7 +9,7 @@ async function getOwnedContact(planId: string, contactId: string, userId: string
   return db.recallContact.findFirst({ where: { id: contactId, planId: plan.id } });
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string; contactId: string } }) {
+export const PATCH = apiHandler(async (req: Request, { params }: { params: { id: string; contactId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedContact(params.id, params.contactId, user.id);
@@ -21,9 +22,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; co
   }
   const updated = await db.recallContact.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);
-}
+});
 
-export async function DELETE(_req: Request, { params }: { params: { id: string; contactId: string } }) {
+export const DELETE = apiHandler(async (_req: Request, { params }: { params: { id: string; contactId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedContact(params.id, params.contactId, user.id);
@@ -31,4 +32,4 @@ export async function DELETE(_req: Request, { params }: { params: { id: string; 
 
   await db.recallContact.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

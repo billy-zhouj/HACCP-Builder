@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedProduct } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
 async function getOwnedIngredient(planId: string, productId: string, ingredientId: string, userId: string) {
   const product = await getOwnedProduct(planId, productId, userId);
@@ -17,10 +18,10 @@ const STRING_FIELDS = [
   "notes",
 ] as const;
 
-export async function PATCH(
+export const PATCH = apiHandler(async (
   req: Request,
   { params }: { params: { id: string; productId: string; ingredientId: string } }
-) {
+) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedIngredient(params.id, params.productId, params.ingredientId, user.id);
@@ -38,12 +39,12 @@ export async function PATCH(
 
   const updated = await db.ingredient.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);
-}
+});
 
-export async function DELETE(
+export const DELETE = apiHandler(async (
   _req: Request,
   { params }: { params: { id: string; productId: string; ingredientId: string } }
-) {
+) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedIngredient(params.id, params.productId, params.ingredientId, user.id);
@@ -51,4 +52,4 @@ export async function DELETE(
 
   await db.ingredient.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

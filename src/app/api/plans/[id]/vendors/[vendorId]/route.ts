@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
 async function getOwnedVendor(planId: string, vendorId: string, userId: string) {
   const plan = await getOwnedPlan(planId, userId);
@@ -21,7 +22,7 @@ const STRING_FIELDS = [
   "notes",
 ] as const;
 
-export async function PATCH(req: Request, { params }: { params: { id: string; vendorId: string } }) {
+export const PATCH = apiHandler(async (req: Request, { params }: { params: { id: string; vendorId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedVendor(params.id, params.vendorId, user.id);
@@ -36,9 +37,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; ve
 
   const updated = await db.vendor.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);
-}
+});
 
-export async function DELETE(_req: Request, { params }: { params: { id: string; vendorId: string } }) {
+export const DELETE = apiHandler(async (_req: Request, { params }: { params: { id: string; vendorId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedVendor(params.id, params.vendorId, user.id);
@@ -46,4 +47,4 @@ export async function DELETE(_req: Request, { params }: { params: { id: string; 
 
   await db.vendor.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
 async function getOwnedMember(planId: string, memberId: string, userId: string) {
   const plan = await getOwnedPlan(planId, userId);
@@ -8,7 +9,7 @@ async function getOwnedMember(planId: string, memberId: string, userId: string) 
   return db.haccpTeamMember.findFirst({ where: { id: memberId, planId: plan.id } });
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string; memberId: string } }) {
+export const PATCH = apiHandler(async (req: Request, { params }: { params: { id: string; memberId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedMember(params.id, params.memberId, user.id);
@@ -21,9 +22,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string; me
   }
   const updated = await db.haccpTeamMember.update({ where: { id: owned.id }, data });
   return NextResponse.json(updated);
-}
+});
 
-export async function DELETE(_req: Request, { params }: { params: { id: string; memberId: string } }) {
+export const DELETE = apiHandler(async (_req: Request, { params }: { params: { id: string; memberId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const owned = await getOwnedMember(params.id, params.memberId, user.id);
@@ -31,4 +32,4 @@ export async function DELETE(_req: Request, { params }: { params: { id: string; 
 
   await db.haccpTeamMember.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

@@ -3,8 +3,9 @@ import { getCurrentUser } from "@/lib/session";
 import { db } from "@/lib/db";
 import { canExportPlan } from "@/lib/entitlements";
 import { buildPlanDocx } from "@/lib/exportDocx";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = apiHandler(async (_req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -40,4 +41,4 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       "Content-Disposition": `attachment; filename="${plan.name.replace(/[^a-z0-9-_ ]/gi, "").trim() || "haccp-plan"}.docx"`,
     },
   });
-}
+});

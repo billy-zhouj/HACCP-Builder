@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { stripe, STRIPE_ENABLED, PRICE_ONE_TIME, PRICE_STORAGE_SUBSCRIPTION } from "@/lib/stripe";
+import { apiHandler } from "@/lib/apiHandler";
 
 /**
  * Creates a Stripe Checkout session for either:
@@ -11,7 +12,7 @@ import { stripe, STRIPE_ENABLED, PRICE_ONE_TIME, PRICE_STORAGE_SUBSCRIPTION } fr
  * 501 pointing at the dev-mode unlock endpoint instead, so the wizard is
  * still testable end-to-end without live billing credentials.
  */
-export async function POST(req: Request) {
+export const POST = apiHandler(async (req: Request) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -56,4 +57,4 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ error: "未知的结账类型" }, { status: 400 });
-}
+});

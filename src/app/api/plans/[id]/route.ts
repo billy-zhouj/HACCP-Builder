@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
+import { parseFacilityProfile } from "@/lib/safeJsonParse";
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = apiHandler(async (_req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -27,11 +29,11 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
   return NextResponse.json({
     ...plan,
-    facilityProfile: plan.facilityProfile ? JSON.parse(plan.facilityProfile) : null,
+    facilityProfile: parseFacilityProfile(plan.facilityProfile),
   });
-}
+});
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export const PATCH = apiHandler(async (req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -49,11 +51,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const updated = await db.plan.update({ where: { id: owned.id }, data });
   return NextResponse.json({
     ...updated,
-    facilityProfile: updated.facilityProfile ? JSON.parse(updated.facilityProfile) : null,
+    facilityProfile: parseFacilityProfile(updated.facilityProfile),
   });
-}
+});
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export const DELETE = apiHandler(async (_req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -62,4 +64,4 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
 
   await db.plan.delete({ where: { id: owned.id } });
   return NextResponse.json({ ok: true });
-}
+});

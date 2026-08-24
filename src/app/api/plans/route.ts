@@ -2,16 +2,17 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { db } from "@/lib/db";
 import { computeRetentionExpiry } from "@/lib/entitlements";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function GET() {
+export const GET = apiHandler(async () => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
   const plans = await db.plan.findMany({ where: { userId: user.id }, orderBy: { updatedAt: "desc" } });
   return NextResponse.json(plans);
-}
+});
 
-export async function POST(req: Request) {
+export const POST = apiHandler(async (req: Request) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
 
@@ -27,4 +28,4 @@ export async function POST(req: Request) {
   });
 
   return NextResponse.json(plan, { status: 201 });
-}
+});

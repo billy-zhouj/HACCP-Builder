@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedProcessStep } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function POST(
+export const POST = apiHandler(async (
   req: Request,
   { params }: { params: { id: string; productId: string; stepId: string } }
-) {
+) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const step = await getOwnedProcessStep(params.id, params.productId, params.stepId, user.id);
@@ -20,4 +21,4 @@ export async function POST(
     },
   });
   return NextResponse.json(hazard, { status: 201 });
-}
+});

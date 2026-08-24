@@ -3,8 +3,10 @@ import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getTemplate } from "@/lib/sopTemplates";
 import { EMPTY_FACILITY_PROFILE, type FacilityProfile } from "@/types";
+import { apiHandler } from "@/lib/apiHandler";
+import { parseFacilityProfile } from "@/lib/safeJsonParse";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export const POST = apiHandler(async (req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const plan = await getOwnedPlan(params.id, user.id);
@@ -15,9 +17,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const template = templateKey ? getTemplate(templateKey) : undefined;
   if (!template) return NextResponse.json({ error: "未知模板" }, { status: 400 });
 
-  const facility: FacilityProfile = plan.facilityProfile
-    ? { ...EMPTY_FACILITY_PROFILE, ...JSON.parse(plan.facilityProfile) }
-    : EMPTY_FACILITY_PROFILE;
+  const facility: FacilityProfile = parseFacilityProfile(plan.facilityProfile) ?? EMPTY_FACILITY_PROFILE;
 
   const [products, vendors, recallContacts, mockRecalls, haccpTeam] = await Promise.all([
     db.product.findMany({ where: { planId: plan.id }, orderBy: { order: "asc" }, include: { ingredients: { orderBy: { order: "asc" } } } }),
@@ -46,4 +46,4 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   });
 
   return NextResponse.json(sop, { status: 201 });
-}
+});

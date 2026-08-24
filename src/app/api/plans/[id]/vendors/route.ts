@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedPlan } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export const POST = apiHandler(async (req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const plan = await getOwnedPlan(params.id, user.id);
@@ -28,4 +29,4 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     },
   });
   return NextResponse.json(vendor, { status: 201 });
-}
+});

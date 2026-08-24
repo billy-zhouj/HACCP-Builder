@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, getOwnedProduct } from "@/lib/session";
 import { db } from "@/lib/db";
+import { apiHandler } from "@/lib/apiHandler";
 
-export async function POST(req: Request, { params }: { params: { id: string; productId: string } }) {
+export const POST = apiHandler(async (req: Request, { params }: { params: { id: string; productId: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
   const product = await getOwnedProduct(params.id, params.productId, user.id);
@@ -25,4 +26,4 @@ export async function POST(req: Request, { params }: { params: { id: string; pro
     },
   });
   return NextResponse.json(ingredient, { status: 201 });
-}
+});
