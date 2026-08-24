@@ -12,7 +12,10 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     where: { id: params.id, userId: user.id },
     include: {
       products: {
-        include: { processSteps: { include: { hazards: true }, orderBy: { order: "asc" } }, ingredients: { orderBy: { order: "asc" } } },
+        include: {
+          processSteps: { include: { hazards: true }, orderBy: { order: "asc" } },
+          ingredients: { include: { supplierVendor: true }, orderBy: { order: "asc" } },
+        },
         orderBy: { order: "asc" },
       },
       vendors: { orderBy: { order: "asc" } },

@@ -283,7 +283,15 @@ model Hazard {
 
   requiresPreventiveControl Boolean @default(false)
 
-  // CCP decision-tree answers (Codex four-question tree) and the resulting status
+  // CCP decision-tree answers (Codex 2022 revision, CXC 1-1969 Annex IV
+  // Figure 1 four-question tree) and the resulting status
+  ccpQ1CanBeControlledByPrp           Boolean?
+  ccpQ2HasSpecificControlMeasures     Boolean?
+  ccpQ3WillLaterStepPreventOrEliminate Boolean?
+  ccpQ4CanStepPreventOrEliminate      Boolean?
+  // Legacy answers from the classic (1993/2003) four-question tree —
+  // superseded by the 2022 revision above. Kept for existing data; the app
+  // no longer reads these columns.
   ccpQ1DoControlMeasuresExist        Boolean?
   ccpQ2IsStepSpecificallyToControl   Boolean?
   ccpQ3CouldContaminationExceedLimit Boolean?

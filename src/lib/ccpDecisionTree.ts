@@ -2,9 +2,28 @@
  * CCP decision-tree engine — Principle 2 of the Codex Alimentarius/NACMCF
  * HACCP system.
  *
- * Implements the classic four-question Codex CCP decision tree, which is the
- * internationally accepted way to make the CCP-vs-other-preventive-control
- * determination consistently across all food sectors.
+ * Implements the four-question CCP decision tree from the Codex 2022 revision
+ * (CXC 1-1969, Annex IV, Figure 1):
+ *
+ *   Q1. Can the significant hazard be controlled at an acceptable level at
+ *       this step by prerequisite programs (e.g., GHP)?
+ *         Yes → this step is not a CCP (move to the next hazard/step)
+ *         No  → Q2
+ *   Q2. Are there specific control measures for this identified significant
+ *       hazard at this step?
+ *         Yes → Q3
+ *         No  → this step is not a CCP; subsequent steps should be evaluated
+ *               for whether they are CCPs
+ *   Q3. Will a subsequent step prevent or eliminate this identified
+ *       significant hazard, or reduce it to an acceptable level?
+ *         Yes → that subsequent step should be a CCP
+ *         No  → Q4
+ *   Q4. Can this step prevent or eliminate this identified significant hazard,
+ *       or reduce it to an acceptable level?
+ *         Yes → this step is a CCP
+ *         No  → modify the step, process or product to implement control
+ *               measures (then return to the start of the tree after a new
+ *               hazard analysis)
  *
  * This is decision-support, not a substitute for review/sign-off by the
  * individual(s) responsible for food safety at your facility.
@@ -13,14 +32,14 @@
 export type YesNo = boolean;
 
 export interface DecisionTreeAnswers {
-  /** Q1: Do control measures exist for this hazard at this or a later step? */
-  q1DoControlMeasuresExist: YesNo | null;
-  /** Q2: Is this step specifically designed to eliminate/reduce the hazard to an acceptable level? */
-  q2IsStepSpecificallyToControl: YesNo | null;
-  /** Q3: Could contamination occur at, or increase to, an unacceptable level at this step? */
-  q3CouldContaminationExceedLimit: YesNo | null;
-  /** Q4: Will a later step eliminate the hazard or reduce it to an acceptable level? */
-  q4WillLaterStepEliminate: YesNo | null;
+  /** Q1: Can the significant hazard be controlled at an acceptable level at this step by prerequisite programs (e.g., GHP)? */
+  q1CanBeControlledByPrp: YesNo | null;
+  /** Q2: Are there specific control measures for this identified significant hazard at this step? */
+  q2HasSpecificControlMeasures: YesNo | null;
+  /** Q3: Will a subsequent step prevent or eliminate the identified significant hazard, or reduce it to an acceptable level? */
+  q3WillLaterStepPreventOrEliminate: YesNo | null;
+  /** Q4: Can this step prevent or eliminate the identified significant hazard, or reduce it to an acceptable level? */
+  q4CanStepPreventOrEliminate: YesNo | null;
 }
 
 export type DecisionResult =
@@ -41,62 +60,55 @@ export interface QuestionGuidance {
 }
 
 export const QUESTION_TEXT: Record<keyof DecisionTreeAnswers, QuestionGuidance> = {
-  q1DoControlMeasuresExist: {
-    short: "该危害是否存在控制措施——在本步骤，或流程中任何后续步骤？",
-    plain: "在你的流程中，是否有任何能够控制该危害的措施？",
-    help: "要同时查看本步骤及其后的所有步骤——不只是当前这一步。",
+  q1CanBeControlledByPrp: {
+    short: "该显著危害能否通过前提方案（如 GHP）在本步骤被控制在可接受水平？",
+    plain: "靠良好卫生规范（GHP）等前提方案，这一危害在本步骤是否已经足够受控？",
+    help: "先评估危害的显著性——无控制时发生的可能性与影响严重度——再判断 GHP 是否足以控制它。",
     howToDecide:
-      "控制措施是任何能够预防、消除或将危害降至可接受水平的行动或活动。包括工艺步骤（加热、金属检测、筛分、过滤）以及存在于前提方案中的预防控制措施（卫生、过敏原转产、供应商保证）。只要其中任何一项适用于该危害，答案即为「是」。",
+      "前提方案包括常规 GHP（清洁消毒、人员卫生、虫害控制、设备维护、过敏原隔离、供应商保证）以及控制该危害需要更多关注的 GHP（如针对该危害的监控与记录）。只有当这些措施足以把该显著危害控制在可接受水平时才回答「是」；如果还需要一个能设定关键限值的工艺控制步骤，回答「否」。",
     yesExample:
-      "是——沙门氏菌可能存在于来料生禽肉中，后续经验证的加热步骤达到 74°C 即可将其杀灭。",
+      "是——包装步骤的微生物风险，可由既有的清洁消毒与人员卫生 GHP 控制在可接受水平，无需单独的工艺控制步骤。",
     noExample:
-      "否——玻璃碎片可能在本步骤进入，且下游没有任何措施（无检验、过滤或检测）能够将其去除。",
+      "否——原料接收步骤的致病菌风险无法仅靠 GHP 控制，必须依赖后续的加热等工艺控制步骤。",
     watchOut:
-      "如果回答「否」，不要就此放过。Codex 指南要求追问：在本步骤进行控制对食品安全是否必要？如果是，那么这就是一个无控制的重大危害——你必须修改步骤、工艺或产品以引入控制措施。这是工艺重新设计，而非简单的一个「不是 CCP」结果。",
-    consequence:
-      "「是」→ 继续 Q2。「否」→ 当前不是 CCP，且你可能需要改变工艺来控制该危害。",
+      "不要因为「存在某个 SOP」就回答「是」——必须是 GHP 本身足以充分控制该显著危害。对显著危害（高严重度或高可能性）尤其谨慎：轻易把显著危害归给前提方案，是审核中最常见的缺陷之一。",
+    consequence: "「是」→ 本步骤不是 CCP（转向下一个危害/步骤）。「否」→ 继续 Q2。",
   },
-  q2IsStepSpecificallyToControl: {
-    short: "本步骤是否专门设计用于消除该危害，或将其降至可接受水平？",
-    plain: "该步骤是否被有意放入流程，专门用于处理这一特定危害？",
-    help: "仅适用于加工步骤——对于来料/收货，视为不适用（回答「否」）并继续至 Q3。",
+  q2HasSpecificControlMeasures: {
+    short: "本步骤是否存在针对该已识别显著危害的特定控制措施？",
+    plain: "在这一步本身，有没有专门针对这一危害的控制手段？",
+    help: "只看本步骤——不要看后续步骤（那是 Q3 的事）。",
     howToDecide:
-      "「专门设计」意味着该步骤的存在——至少部分地——是为了控制该危害，并且你可以为其设定一个可测量的限值。加热、巴氏杀菌、金属检测、筛分和酸化通常符合。混合、接收、储存和包装通常不符合，即使这些步骤可能也存在危害。",
-    yesExample:
-      "是——巴氏杀菌器专门设计为将产品在 72°C 保持 15 秒，以杀灭营养型病原体。",
-    noExample:
-      "否——混合步骤中可能存在的病原体，但混合本身并无意降低它们。",
+      "特定控制措施是专门针对该已识别显著危害而设计的措施，通常能设定可测量的关键限值（温度、时间、pH、浓度、网目尺寸等）。加热、巴氏杀菌、金属检测、筛分、酸化通常符合；混合、储存、包装这类步骤即使存在一般性卫生措施，通常也不算针对该危害的特定控制措施。",
+    yesExample: "是——巴氏杀菌步骤专门将产品在 72°C 保持 15 秒，针对营养型病原体。",
+    noExample: "否——原料接收步骤只有常规验收与清洁要求，没有专门针对该致病菌的控制手段。",
     watchOut:
-      "有两处最容易出错。(1) 此问题仅适用于加工步骤——对于来料/收货，视为「不适用」，回答「否」并继续 Q3。(2) 如果实际降低危害的是某个 SOP 或前提方案，答案也是「否」。此问题问的是加工步骤本身是否设计用于控制危害——而非围绕该步骤的某个程序是否控制了它。还要注意，回答「是」会立即终止判定树并得出 CCP 结论，因此只有在这是控制该危害真正最合适的步骤时才回答「是」。",
-    consequence: "「是」→ 本步骤是 CCP（判定树结束）。「否」→ 继续 Q3。",
+      "回答「否」并不意味着放过该危害——后续步骤应被评估是否为 CCP（Q3）。若在问题 2–4 均未识别出 CCP，必须修改工艺或产品以实施控制措施，并开展新的危害分析。",
+    consequence: "「是」→ 继续 Q3。「否」→ 本步骤不是 CCP，后续步骤应被评估是否为 CCP。",
   },
-  q3CouldContaminationExceedLimit: {
-    short: "污染是否可能在本步骤发生，或增加到不可接受的水平？",
-    plain: "如果此处的控制失效，该危害是否会在此步骤达到危险水平？",
-    help: "假设控制措施失效的情况下回答——这正是该问题的意义所在。",
-    howToDecide:
-      "此问题询问的是，如果控制措施失效，本步骤是否存在、发生或增加污染。请基于产品、工艺、企业历史（投诉、召回、偏差、环境监测结果）和行业数据作答——而不是基于一切正常运转的假设。",
-    yesExample:
-      "是——冷却过程中如果冷却速率下滑，产气荚膜梭菌芽孢可能萌发并繁殖超过安全水平。",
-    noExample:
-      "否——产品在此步骤已密封并冷冻保存；没有实际的途径让污染进入或让危害生长。",
-    watchOut:
-      "不要仅仅因为你的控制措施通常有效就回答「否」——该问题假设它们失效了。这里适用常规经验法则：如果你不确定如何回答，在获得相反证据之前假设最坏情况。不确定时回答「是」，让 Q4 去解决。",
-    consequence: "「是」→ 继续 Q4。「否」→ 本步骤不是 CCP。",
-  },
-  q4WillLaterStepEliminate: {
-    short: "后续步骤是否会消除该危害，或将其降至可接受水平？",
-    plain: "下游是否有某一步骤能真正解决这个问题？",
-    help: "只考虑你确实能够验证和监测的后续步骤。",
+  q3WillLaterStepPreventOrEliminate: {
+    short: "后续步骤是否将预防或消除该已识别显著危害，或将其降至可接受水平？",
+    plain: "下游是否有一个真正的步骤能把这个危害解决掉？",
+    help: "只考虑你确实能够验证、监测并记录关键限值的后续步骤。",
     howToDecide:
       "向前查看剩余步骤，寻找针对该特定危害的真正的杀灭或降低步骤——一个你能验证、监测并记录关键限值的步骤。模糊的「后面大概会处理」不算数。",
-    yesExample:
-      "是——成型步骤可能存在病原体，但后续经验证的加热步骤可将其杀灭。",
-    noExample:
-      "否——这是包装前的最后一道金属检测点；其后没有任何措施能去除金属碎片。",
+    yesExample: "是——成型步骤可能引入的病原体，后续经验证的加热步骤可将其杀灭。",
+    noExample: "否——这是包装前最后一道金属检测点，其后没有任何措施能去除金属碎片。",
     watchOut:
-      "如果回答「是」，本步骤不是 CCP——但你现在依赖的是那个后续步骤。务必确保该步骤也通过本判定树评估，并被指定为带有自身关键限值的 CCP。最常见的失败是危害悄悄消失，因为每一步都指向下一步。",
-    consequence: "「是」→ 本步骤不是 CCP（该后续步骤才是）。「否」→ 本步骤是 CCP。",
+      "回答「是」时，本步骤不是 CCP——但你现在依赖的是那个后续步骤。务必确保该后续步骤本身也通过判定树评估，并被指定为带有自身关键限值的 CCP。最常见的失败是危害悄悄消失，因为每一步都指向下一步。",
+    consequence: "「是」→ 该后续步骤应是 CCP（本步骤不是）。「否」→ 继续 Q4。",
+  },
+  q4CanStepPreventOrEliminate: {
+    short: "本步骤是否可针对该已识别显著危害加以预防或消除，或将其降至可接受水平？",
+    plain: "这一步本身有没有能力把这个危害压下来？",
+    help: "判断本步骤的控制能力——它能否预防、消除或降低该危害至可接受水平。",
+    howToDecide:
+      "评估本步骤是否具备预防、消除或将该显著危害降至可接受水平的能力，例如可设定并执行的工艺参数（关键限值）。同时考虑本步骤的控制措施是否与其他步骤的控制措施协同控制同一危害——若是，两个步骤都应被视为 CCP。",
+    yesExample: "是——烘烤步骤可将中心温度控制在 ≥90°C 并维持 5 分钟，足以杀灭原料中可能存在的病原菌。",
+    noExample: "否——储存步骤无法消除已引入的金属碎片，也没有能力将其降至可接受水平。",
+    watchOut:
+      "回答「否」是危险信号：它意味着当前工艺对该显著危害没有任何可用的控制。不要就此放过——你必须修改步骤、工艺或产品以实施控制措施，然后在（新）危害分析之后回到决策树起点。",
+    consequence: "「是」→ 本步骤是 CCP（编号并纳入 HACCP 工作表）。「否」→ 修改步骤、工艺或产品以实施控制措施。",
   },
 };
 
@@ -104,7 +116,7 @@ export const QUESTION_TEXT: Record<keyof DecisionTreeAnswers, QuestionGuidance> 
 export const DECISION_TREE_PRINCIPLES: { title: string; body: string }[] = [
   {
     title: "一次只处理一个步骤的一个危害",
-    body: "判定树分别应用于每个工艺步骤上的每一个重大危害。同一危害在一个步骤是 CCP、在另一个步骤不是——这是正常现象，而非矛盾。",
+    body: "判定树分别应用于每个工艺步骤上的每一个显著危害。同一危害在一个步骤是 CCP、在另一个步骤不是——这是正常现象，而非矛盾。",
   },
   {
     title: "拿不准时，假设最坏情况",
@@ -112,23 +124,23 @@ export const DECISION_TREE_PRINCIPLES: { title: string; body: string }[] = [
   },
   {
     title: "并非所有步骤都应是 CCP",
-    body: "由前提方案（GMP、卫生、个人卫生、虫害控制、过敏原隔离、供应商保证）充分控制的危害，在那里得到控制，而不是作为 CCP。指定不必要的 CCP 会分散对真正保障食品安全的要点的关注。",
+    body: "可由前提方案（GHP、卫生、个人卫生、虫害控制、过敏原隔离、供应商保证）充分控制在可接受水平的危害（Q1 答「是」），在那里得到控制，而不是作为 CCP。指定不必要的 CCP 会分散对真正保障食品安全要点的关注。",
   },
   {
-    title: "控制该危害的 SOP 并不使该步骤「设计用于控制它」",
-    body: "这是 Q2 最常见的错误。如果某步骤的危害是由 SOP 或前提方案降低的，那么加工步骤本身并非设计用于控制该危害——是 SOP 在起作用。对 Q2 回答「否」，并记录相应的控制 SOP，而不是指定 CCP。",
+    title: "Q3 答「是」时，你依赖的是后续步骤",
+    body: "该后续步骤必须同样通过判定树评估，并被指定为带有自身关键限值的 CCP。最常见的失败是危害悄悄消失——因为每一步都指向下一步。",
   },
   {
     title: "CCP 需要可测量的关键限值",
-    body: "如果你无法设定一个可实时测量和监测的限值（温度、时间、pH、浓度、网目尺寸），该步骤很可能不是真正的 CCP。",
+    body: "如果你无法为某个步骤设定可实时测量和监测的限值（温度、时间、pH、浓度、网目尺寸），该步骤很可能不是真正的 CCP。",
   },
   {
-    title: "完全没有控制措施是危险信号",
-    body: "如果某个重大危害在你的流程中任何地方都没有控制，答案不是「不是 CCP」——而是产品或工艺必须改变，以便该危害能够得到控制。",
+    title: "Q4 答「否」是危险信号",
+    body: "若本步骤无法预防、消除或降低该显著危害，答案不是「不是 CCP」——而是产品或工艺必须改变，以便该危害能够得到控制。修改后开展新的危害分析，并回到判定树起点。",
   },
   {
     title: "写下你的推理",
-    body: "保留每个答案的理由。审核人员会核实你的决策有依据支撑，而一年之后你也不会记得当初为什么这样回答。",
+    body: "保留每个答案的理由。审核人员会核实你的决策有依据支撑，而一年之后你也不会记得当初为什么那样回答。",
   },
 ];
 
@@ -137,82 +149,91 @@ export const DECISION_TREE_PRINCIPLES: { title: string; body: string }[] = [
  * final classification or the next question that still needs an answer.
  */
 export function evaluateDecisionTree(answers: DecisionTreeAnswers): DecisionResult {
-  const { q1DoControlMeasuresExist, q2IsStepSpecificallyToControl, q3CouldContaminationExceedLimit, q4WillLaterStepEliminate } =
-    answers;
+  const {
+    q1CanBeControlledByPrp,
+    q2HasSpecificControlMeasures,
+    q3WillLaterStepPreventOrEliminate,
+    q4CanStepPreventOrEliminate,
+  } = answers;
 
-  if (q1DoControlMeasuresExist === null) {
-    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q1DoControlMeasuresExist" };
+  if (q1CanBeControlledByPrp === null) {
+    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q1CanBeControlledByPrp" };
   }
 
-  if (q1DoControlMeasuresExist === false) {
+  if (q1CanBeControlledByPrp === true) {
     return {
       status: "NOT_A_CCP",
-      reasonKey: "no-control-measure",
+      reasonKey: "controlled-by-prp",
       reason:
-        "该危害在本步骤或任何后续步骤都不存在控制措施。按现状它不是 CCP——但如果在本步骤进行控制对食品安全是必要的，你必须改变工艺、产品配方或预期用途，使该危害能在计划的某个环节得到控制。",
+        "该显著危害可通过前提方案（如 GHP）在本步骤被控制在可接受水平，因此本步骤不是 CCP。转向下一个危害/步骤。",
       nextQuestion: null,
     };
   }
 
-  if (q2IsStepSpecificallyToControl === null) {
-    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q2IsStepSpecificallyToControl" };
+  if (q2HasSpecificControlMeasures === null) {
+    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q2HasSpecificControlMeasures" };
   }
 
-  if (q2IsStepSpecificallyToControl === true) {
+  if (q2HasSpecificControlMeasures === false) {
+    return {
+      status: "NOT_A_CCP",
+      reasonKey: "no-specific-control-at-step",
+      reason:
+        "本步骤不存在针对该已识别显著危害的特定控制措施，因此本步骤不是 CCP——后续步骤应被评估是否为 CCP。若问题 2–4 均未识别出 CCP，须修改工艺或产品以实施控制措施，并开展新的危害分析。",
+      nextQuestion: null,
+    };
+  }
+
+  if (q3WillLaterStepPreventOrEliminate === null) {
+    return {
+      status: "NOT_EVALUATED",
+      reasonKey: null,
+      reason: null,
+      nextQuestion: "q3WillLaterStepPreventOrEliminate",
+    };
+  }
+
+  if (q3WillLaterStepPreventOrEliminate === true) {
+    return {
+      status: "NOT_A_CCP",
+      reasonKey: "later-step-should-be-ccp",
+      reason:
+        "后续步骤将预防或消除该已识别显著危害（或将其降至可接受水平），因此该后续步骤应是 CCP。务必确保该后续步骤本身也通过本判定树评估，并被指定为带有自身关键限值的 CCP。",
+      nextQuestion: null,
+    };
+  }
+
+  if (q4CanStepPreventOrEliminate === null) {
+    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q4CanStepPreventOrEliminate" };
+  }
+
+  if (q4CanStepPreventOrEliminate === true) {
     return {
       status: "CCP",
-      reasonKey: "step-designed-to-control",
+      reasonKey: "step-can-prevent-or-eliminate",
       reason:
-        "本步骤专门设计用于消除该危害或将其降至可接受水平，因此它是一个关键控制点（CCP）。请在下一步为其定义关键限值和监测程序。",
-      nextQuestion: null,
-    };
-  }
-
-  if (q3CouldContaminationExceedLimit === null) {
-    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q3CouldContaminationExceedLimit" };
-  }
-
-  if (q3CouldContaminationExceedLimit === false) {
-    return {
-      status: "NOT_A_CCP",
-      reasonKey: "no-realistic-contamination-risk",
-      reason:
-        "该危害在本步骤不太可能发生污染，或污染不太可能增加到不可接受的水平，因此它不是本步骤的 CCP。请确保你的判定依据记录下原因——检查员会询问。",
-      nextQuestion: null,
-    };
-  }
-
-  if (q4WillLaterStepEliminate === null) {
-    return { status: "NOT_EVALUATED", reasonKey: null, reason: null, nextQuestion: "q4WillLaterStepEliminate" };
-  }
-
-  if (q4WillLaterStepEliminate === true) {
-    return {
-      status: "NOT_A_CCP",
-      reasonKey: "later-step-controls",
-      reason:
-        "后续步骤将消除该危害或将其降至可接受水平，因此本步骤不是 CCP。重要提示：请确保该后续步骤本身也通过本判定树评估并被指定为 CCP——否则该危害最终将无处受控。",
+        "本步骤可针对该已识别显著危害加以预防或消除（或将其降至可接受水平），因此本步骤是一个关键控制点（CCP）。请为它编号、设定关键限值与监控程序，并纳入 HACCP 工作表。",
       nextQuestion: null,
     };
   }
 
   return {
-    status: "CCP",
-    reasonKey: "no-later-control-required-now",
+    status: "NOT_A_CCP",
+    reasonKey: "no-control-possible",
     reason:
-      "污染可能在此处达到不可接受的水平，且没有后续步骤能够控制它，因此本步骤是一个关键控制点（CCP）。请在下一步为其定义关键限值和监测程序。",
+      "本步骤无法预防、消除或将该显著危害降至可接受水平——当前工艺没有可用的控制措施。按现状它不是 CCP，但你必须修改步骤、工艺或产品以实施控制措施；在（新）危害分析之后，回到决策树起点。",
     nextQuestion: null,
   };
 }
 
 export const QUESTION_ORDER: (keyof DecisionTreeAnswers)[] = [
-  "q1DoControlMeasuresExist",
-  "q2IsStepSpecificallyToControl",
-  "q3CouldContaminationExceedLimit",
-  "q4WillLaterStepEliminate",
+  "q1CanBeControlledByPrp",
+  "q2HasSpecificControlMeasures",
+  "q3WillLaterStepPreventOrEliminate",
+  "q4CanStepPreventOrEliminate",
 ];
 
-/** 渲染已作答的路径，例如「Q1 是 → Q2 否 → Q3 是」。 */
+/** 渲染已作答的路径，例如「Q1 否 → Q2 是 → Q3 否」。 */
 export function describeAnswerPath(answers: DecisionTreeAnswers): string {
   return QUESTION_ORDER.map((q, i) => {
     const v = answers[q];

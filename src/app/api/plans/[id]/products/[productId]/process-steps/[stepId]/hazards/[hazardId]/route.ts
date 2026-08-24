@@ -30,11 +30,12 @@ const STRING_FIELDS = [
   "responsibleParty",
 ] as const;
 
+// Codex 2022 revision (Annex IV, Figure 1) decision-tree answers.
 const CCP_ANSWER_FIELDS = [
-  "ccpQ1DoControlMeasuresExist",
-  "ccpQ2IsStepSpecificallyToControl",
-  "ccpQ3CouldContaminationExceedLimit",
-  "ccpQ4WillLaterStepEliminate",
+  "ccpQ1CanBeControlledByPrp",
+  "ccpQ2HasSpecificControlMeasures",
+  "ccpQ3WillLaterStepPreventOrEliminate",
+  "ccpQ4CanStepPreventOrEliminate",
 ] as const;
 
 export async function PATCH(
@@ -67,22 +68,22 @@ export async function PATCH(
   // ccpStatus is never trusted from the client (Principle 2).
   if (touchedAnswers) {
     const merged: DecisionTreeAnswers = {
-      q1DoControlMeasuresExist:
-        "ccpQ1DoControlMeasuresExist" in data
-          ? (data.ccpQ1DoControlMeasuresExist as boolean | null)
-          : owned.ccpQ1DoControlMeasuresExist,
-      q2IsStepSpecificallyToControl:
-        "ccpQ2IsStepSpecificallyToControl" in data
-          ? (data.ccpQ2IsStepSpecificallyToControl as boolean | null)
-          : owned.ccpQ2IsStepSpecificallyToControl,
-      q3CouldContaminationExceedLimit:
-        "ccpQ3CouldContaminationExceedLimit" in data
-          ? (data.ccpQ3CouldContaminationExceedLimit as boolean | null)
-          : owned.ccpQ3CouldContaminationExceedLimit,
-      q4WillLaterStepEliminate:
-        "ccpQ4WillLaterStepEliminate" in data
-          ? (data.ccpQ4WillLaterStepEliminate as boolean | null)
-          : owned.ccpQ4WillLaterStepEliminate,
+      q1CanBeControlledByPrp:
+        "ccpQ1CanBeControlledByPrp" in data
+          ? (data.ccpQ1CanBeControlledByPrp as boolean | null)
+          : owned.ccpQ1CanBeControlledByPrp,
+      q2HasSpecificControlMeasures:
+        "ccpQ2HasSpecificControlMeasures" in data
+          ? (data.ccpQ2HasSpecificControlMeasures as boolean | null)
+          : owned.ccpQ2HasSpecificControlMeasures,
+      q3WillLaterStepPreventOrEliminate:
+        "ccpQ3WillLaterStepPreventOrEliminate" in data
+          ? (data.ccpQ3WillLaterStepPreventOrEliminate as boolean | null)
+          : owned.ccpQ3WillLaterStepPreventOrEliminate,
+      q4CanStepPreventOrEliminate:
+        "ccpQ4CanStepPreventOrEliminate" in data
+          ? (data.ccpQ4CanStepPreventOrEliminate as boolean | null)
+          : owned.ccpQ4CanStepPreventOrEliminate,
     };
     const result = evaluateDecisionTree(merged);
     data.ccpStatus = result.status;

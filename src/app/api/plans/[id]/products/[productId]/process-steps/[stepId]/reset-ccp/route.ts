@@ -12,14 +12,16 @@ export async function POST(
   if (!owned) return NextResponse.json({ error: "未找到" }, { status: 404 });
 
   // Reset every hazard in this step back to the unevaluated state so the
-  // decision tree has to be re-run from scratch (Principle 2).
+  // decision tree (Codex 2022 revision, Annex IV Figure 1) has to be re-run
+  // from scratch (Principle 2). Legacy classic-tree answers are left in
+  // place — they are deprecated and no longer read.
   const updated = await db.hazard.updateMany({
     where: { processStepId: owned.id },
     data: {
-      ccpQ1DoControlMeasuresExist: null,
-      ccpQ2IsStepSpecificallyToControl: null,
-      ccpQ3CouldContaminationExceedLimit: null,
-      ccpQ4WillLaterStepEliminate: null,
+      ccpQ1CanBeControlledByPrp: null,
+      ccpQ2HasSpecificControlMeasures: null,
+      ccpQ3WillLaterStepPreventOrEliminate: null,
+      ccpQ4CanStepPreventOrEliminate: null,
       ccpStatus: "NOT_EVALUATED",
     },
   });

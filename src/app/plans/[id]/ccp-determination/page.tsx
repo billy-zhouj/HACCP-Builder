@@ -10,10 +10,10 @@ interface Hazard {
   type: string;
   description: string;
   requiresPreventiveControl: boolean;
-  ccpQ1DoControlMeasuresExist: boolean | null;
-  ccpQ2IsStepSpecificallyToControl: boolean | null;
-  ccpQ3CouldContaminationExceedLimit: boolean | null;
-  ccpQ4WillLaterStepEliminate: boolean | null;
+  ccpQ1CanBeControlledByPrp: boolean | null;
+  ccpQ2HasSpecificControlMeasures: boolean | null;
+  ccpQ3WillLaterStepPreventOrEliminate: boolean | null;
+  ccpQ4CanStepPreventOrEliminate: boolean | null;
   ccpStatus: string;
 }
 
@@ -32,10 +32,10 @@ interface ProductData {
 
 function toAnswers(h: Hazard): DecisionTreeAnswers {
   return {
-    q1DoControlMeasuresExist: h.ccpQ1DoControlMeasuresExist,
-    q2IsStepSpecificallyToControl: h.ccpQ2IsStepSpecificallyToControl,
-    q3CouldContaminationExceedLimit: h.ccpQ3CouldContaminationExceedLimit,
-    q4WillLaterStepEliminate: h.ccpQ4WillLaterStepEliminate,
+    q1CanBeControlledByPrp: h.ccpQ1CanBeControlledByPrp,
+    q2HasSpecificControlMeasures: h.ccpQ2HasSpecificControlMeasures,
+    q3WillLaterStepPreventOrEliminate: h.ccpQ3WillLaterStepPreventOrEliminate,
+    q4CanStepPreventOrEliminate: h.ccpQ4CanStepPreventOrEliminate,
   };
 }
 
@@ -62,10 +62,10 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
   async function answer(stepId: string, hazardId: string, field: keyof DecisionTreeAnswers, value: boolean) {
     if (!active) return;
     const fieldMap: Record<keyof DecisionTreeAnswers, string> = {
-      q1DoControlMeasuresExist: "ccpQ1DoControlMeasuresExist",
-      q2IsStepSpecificallyToControl: "ccpQ2IsStepSpecificallyToControl",
-      q3CouldContaminationExceedLimit: "ccpQ3CouldContaminationExceedLimit",
-      q4WillLaterStepEliminate: "ccpQ4WillLaterStepEliminate",
+      q1CanBeControlledByPrp: "ccpQ1CanBeControlledByPrp",
+      q2HasSpecificControlMeasures: "ccpQ2HasSpecificControlMeasures",
+      q3WillLaterStepPreventOrEliminate: "ccpQ3WillLaterStepPreventOrEliminate",
+      q4CanStepPreventOrEliminate: "ccpQ4CanStepPreventOrEliminate",
     };
     await fetch(`/api/plans/${params.id}/products/${active.id}/process-steps/${stepId}/hazards/${hazardId}`, {
       method: "PATCH",
@@ -88,7 +88,11 @@ export default function CcpDeterminationPage({ params }: { params: { id: string 
     <div>
       <h1 className="text-2xl font-bold text-slate-900">CCP 判定（原则 2）</h1>
       <p className="mt-1 text-sm text-slate-600">
-        让每个重大危害通过 Codex 四问判定树。
+        让每个重大危害通过 Codex 四问判定树（2022 修订版，CXC 1-1969 附件 IV 图 1：前提方案控制 →
+        本步骤特定控制措施 → 后续步骤控制 → 本步骤控制能力）。
+      </p>
+      <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        判定树已升级为 Codex 2022 修订版。此前的四问（经典版）作答不会自动沿用——请对每个重大危害重新判定。
       </p>
       <label className="mt-2 flex items-center gap-2 text-xs text-slate-600">
         <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
