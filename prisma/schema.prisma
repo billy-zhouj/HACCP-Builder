@@ -389,9 +389,15 @@ model PlanExport {
 // The unique constraint on stripeEventId ensures only the first processing
 // of a given event succeeds; subsequent retries hit a constraint violation
 // and are treated as already-processed.
+//
+// status: "processing" while a worker is fulfilling the event; "processed"
+// once the fulfillment committed. A stale "processing" claim (older than
+// CLAIM_STALE_MS in the webhook route) is taken over by a Stripe retry, so a
+// crash between claim and commit is eventually reprocessed.
 model WebhookEvent {
   id            String   @id @default(cuid())
   stripeEventId String   @unique
   eventType     String
+  status        String   @default("processed")
   createdAt     DateTime @default(now())
 }
