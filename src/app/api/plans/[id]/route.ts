@@ -4,9 +4,16 @@ import { db } from "@/lib/db";
 import { apiHandler } from "@/lib/apiHandler";
 import { parseFacilityProfile } from "@/lib/safeJsonParse";
 
-export const GET = apiHandler(async (_req: Request, { params }: { params: { id: string } }) => {
+export const GET = apiHandler(async (req: Request, { params }: { params: { id: string } }) => {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "未授权" }, { status: 401 });
+
+  // SOP documents make up ~67% of this response (measured: 64.6KB of 96.1KB),
+  // yet only the gmp / sops / recall / review-export pages need them. Return
+  // them only when explicitly requested via ?include=sops, so the other nine
+  // wizard pages fetch a much smaller payload on every navigation.
+  const include = new URL(req.url).searchParams.get("include") ?? "";
+  const includeSops = include.split(",").includes("sops");
 
   const plan = await db.plan.findFirst({
     where: { id: params.id, userId: user.id },
@@ -19,7 +26,7 @@ export const GET = apiHandler(async (_req: Request, { params }: { params: { id: 
         orderBy: { order: "asc" },
       },
       vendors: { orderBy: { order: "asc" } },
-      sops: true,
+      ...(includeSops ? { sops: true } : {}),
       recallContacts: { orderBy: { order: "asc" } },
       mockRecallRecords: true,
       haccpTeamMembers: { orderBy: { order: "asc" } },

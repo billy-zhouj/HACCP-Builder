@@ -22,7 +22,7 @@ function ReviewExportInner({ params }: { params: { id: string } }) {
   const [message, setMessage] = useState<string | null>(null);
 
   async function load() {
-    const p = await fetch(`/api/plans/${params.id}`).then((r) => r.json());
+    const p = await fetch(`/api/plans/${params.id}?include=sops`).then((r) => r.json());
     setPlan(p);
     setLoading(false);
   }

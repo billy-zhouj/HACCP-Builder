@@ -12,7 +12,7 @@ export default function GmpPage({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
 
   async function load() {
-    const plan = await fetch(`/api/plans/${params.id}`).then((r) => r.json());
+    const plan = await fetch(`/api/plans/${params.id}?include=sops`).then((r) => r.json());
     const sops = (plan.sops ?? []).filter((s: GeneratedSop) => AVAILABLE.some((a) => a.key === s.templateKey));
     setGenerated(sops);
     setLoading(false);

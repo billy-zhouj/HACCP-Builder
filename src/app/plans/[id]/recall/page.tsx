@@ -17,7 +17,7 @@ export default function RecallPage({ params }: { params: { id: string } }) {
   const [newRecord, setNewRecord] = useState({ performedAt: "", performedBy: "", percentTraced: "", resultsSummary: "" });
 
   async function load() {
-    const plan = await fetch(`/api/plans/${params.id}`).then((r) => r.json());
+    const plan = await fetch(`/api/plans/${params.id}?include=sops`).then((r) => r.json());
     setContacts(plan.recallContacts ?? []);
     setRecords(plan.mockRecallRecords ?? []);
     setGenerated((plan.sops ?? []).filter((s: GeneratedSop) => AVAILABLE.some((a) => a.key === s.templateKey)));
