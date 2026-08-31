@@ -94,6 +94,8 @@ Variables** and add:
 | `STRIPE_WEBHOOK_SECRET` | Same — blank until you wire up real billing |
 | `STRIPE_PRICE_ID_ONE_TIME` | Same |
 | `STRIPE_PRICE_ID_STORAGE_SUBSCRIPTION` | Same |
+| `CRON_SECRET` | A long random string — protects the scheduled retention-purge endpoint (see §"Retention purge" below). Leave blank to disable the endpoint (it returns 501) |
+| `RETENTION_PURGE_BATCH` | `500` — max plans purged per cron run |
 
 Click **Create Web Service**. Render will pull the repo, run the build
 command, and start it — watch the **Logs** tab for progress.
@@ -186,3 +188,40 @@ From here on, deploying is just: commit, push to `main`, Render auto-builds
 and redeploys. Any schema change needs a migration generated locally
 (`npx prisma migrate dev --name ...`) and committed alongside the code
 change, same as step 5.
+
+## Retention purge
+
+Plan data on the free / one-time-unlock tier is retained for
+`DEFAULT_RETENTION_DAYS` (90) and then purged, unless the owner has an active
+storage subscription (in which case `retentionExpiresAt` is null and the plan
+is kept indefinitely). The purge itself runs via an authenticated cron
+endpoint:
+
+```
+POST /api/cron/retention-purge
+Authorization: Bearer <CRON_SECRET>
+```
+
+It (1) re-anchors plans whose owner's subscription has lapsed — giving them a
+fresh 90-day window — and (2) deletes plans whose `retentionExpiresAt` is in
+the past (cascading to all child rows). It is idempotent and safe to re-run.
+The endpoint refuses to run (501) if `CRON_SECRET` is unset, and returns 401
+if the bearer token doesn't match.
+
+Schedule it to run **daily** (e.g. 03:00 UTC). Options:
+
+- **Render Cron Job:** create a Cron Job service (New → Cron Job), schedule
+  `0 3 * * *`, build command `npm install`, command:
+  ```
+  curl -s -X POST -H "Authorization: Bearer $CRON_SECRET" https://<your-render-url>/api/cron/retention-purge
+  ```
+  (set `CRON_SECRET` as an env var on the cron job, matching the web service).
+- **External monitor:** [cron-job.org](https://cron-job.org) or
+  [UptimeRobot](https://uptimerobot.com) with a daily schedule hitting the URL
+  with the `Authorization` header.
+- **GitHub Action:** a scheduled workflow using `actions/curl` or a `fetch`
+  step against the endpoint.
+
+If you'd rather not run the purge as HTTP, the core logic is in
+`src/lib/retention.ts` (`purgeExpiredPlans`) and can be called from a
+standalone `tsx` script run by any scheduler.
