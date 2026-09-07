@@ -541,7 +541,7 @@ const CCP_WORKSHEET_NOTES = `**各栏作答规则**
 // numbering, a bordered rule, tables) so no raw markdown symbols survive in
 // the exported document.
 
-type MdBlock =
+export type MdBlock =
   | { kind: "heading"; level: number; text: string }
   | { kind: "para"; text: string }
   | { kind: "quote"; text: string }
@@ -568,7 +568,7 @@ const orderedRef = (id: number) => `haccp-ordered-${id}`;
 // numbering pollution across concurrent/warm-start serverless invocations.
 // Each call to buildPlanDocx creates a fresh { next: 1 } and threads it
 // through parseMarkdown → markdownToBlocks → addMarkdown.
-interface ListCounter {
+export interface ListCounter {
   next: number;
 }
 
@@ -620,7 +620,15 @@ function parseCells(line: string): string[] {
     .map((c) => c.trim());
 }
 
-function parseMarkdown(md: string, counter: ListCounter): {
+/**
+ * Parses the supported markdown subset into blocks.
+ *
+ * Exported for the contract/regression test in tests/sop-templates.test.ts,
+ * which renders every SOP template through the *real* parser so the test can
+ * never drift from the implementation. Pure: builds plain objects only, no
+ * docx nodes. Keep this purity if you change it.
+ */
+export function parseMarkdown(md: string, counter: ListCounter): {
   blocks: MdBlock[];
   orderedLists: { id: number; start: number }[];
   usesBullets: boolean;
