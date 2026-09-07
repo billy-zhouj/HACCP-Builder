@@ -15,7 +15,13 @@
 // API routes).
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // relationJoins: enables relationLoadStrategy: "join" per query — loads a
+  // whole nested include tree in ONE SQL round trip (lateral joins) instead
+  // of one query per relation level (measured 11 → 1 on the plan export /
+  // detail reads, byte-identical results). Preview feature on Prisma 5.x;
+  // becomes GA on the Prisma 6 upgrade, where this flag can be removed.
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
